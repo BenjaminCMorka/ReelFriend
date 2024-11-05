@@ -1,0 +1,85 @@
+body {
+    margin: 0; /* Remove default margin */
+    overflow: hidden; /* Prevent scroll on body */
+}
+
+.landing-page {
+    height: 100vh; /* Full viewport height */
+    display: flex;
+    flex-direction: column; /* Vertical layout */
+}
+
+.main-content {
+    flex: 1; /* Fill remaining space */
+    overflow-y: auto; /* Enable vertical scrolling */
+}
+
+.movie-cards {
+    display: flex;
+    flex-direction: column; /* Align cards in a column */
+    align-items: center; /* Center align the cards */
+    width: 100%; /* Full width for the container */
+}
+
+.movie-card {
+    display: flex; /* Align items horizontally */
+    background-color: rgb(7, 20, 43); /* Card background color */
+    border-radius: 8px; /* Rounded corners */
+    color: white;
+    overflow: hidden; /* Ensure content does not overflow the card */
+    width: 95%; /* Width of the card */
+    height: 400px;
+    max-width: 1500px; /* Optional: Max width for better layout */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
+    margin: 20px 0; /* Space above and below each card */
+   
+    transition: transform 0.2s; /* Animation for hover effect */
+}
+
+.movie-card:hover {
+    transform: scale(1.02); /* Scale up on hover for effect */
+}
+
+.movie-image {
+    width: 250px; /* Fixed width for image */
+    height: 100%; /* Auto height to maintain aspect ratio */
+    border-radius: 8px; /* Rounded corners for the image */
+    object-fit: cover; /* Ensure image covers the area */
+    margin-right: 16px; /* Space between image and text */
+}
+
+.movie-details {
+    display: flex; /* Use flexbox for vertical layout */
+    flex-direction: column; /* Stack children vertically */
+    flex-grow: 1; /* Allow details to take remaining space */
+    margin: 0 0 8px 0; /* Spacing below overview */
+    padding: 20px 0; /* Optional: Add vertical padding for spacing */
+    justify-content: space-between; /* Space between items to push "Watch Now" down */
+
+}
+
+.movie-details h3 {
+    font-size: 1.8rem; /* Title font size */
+    margin: 0 0 8px 0; /* Spacing below title */
+    padding-top: 16px;
+}
+
+.movie-details p {
+    font-size: 1.1rem; /* Overview font size */
+    margin: 0 0 8px 0; /* Spacing below overview */
+    line-height: 1.4;
+}
+
+.watch-now {
+    display: inline-block; /* Make the link inline block */
+    padding: 10px; /* Padding around the link */
+    background-color: #007bff; /* Link background color */
+    color: white; /* Link text color */
+    text-align: center; /* Center the link text */
+    text-decoration: none; /* Remove underline */
+    border-radius: 4px; /* Rounded corners for link */
+}
+
+.watch-now:hover {
+    background-color: #0056b3; /* Darker shade on hover */
+}
