@@ -17,7 +17,6 @@ router.post('/signup', async (req, res) => {
       return res.status(400).json({ error: 'Email already in use.' });
     }
 
-    // Hash the password before saving
     const saltRounds = 10;
     const hashedPassword = await bcrypt.hash(password, saltRounds);
     const newUser = new User({ username, email, password: hashedPassword });
@@ -39,13 +38,12 @@ router.post('/login', async (req, res) => {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    // Compare the hashed password
+
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
       return res.status(400).json({ error: 'Invalid email or password' });
     }
 
-    // Generate JWT
     const token = jwt.sign(
       { userId: user._id, username: user.username },
       process.env.JWT_SECRET,
