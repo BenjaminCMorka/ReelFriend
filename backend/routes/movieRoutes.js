@@ -1,9 +1,9 @@
-// backend/routes/movieRoutes.js
+
 const express = require('express');
 const router = express.Router();
 const Movie = require('../models/Movie');
 
-// Add a new movie
+
 router.post('/movies', async (req, res) => {
     try {
         const movie = new Movie(req.body);
@@ -14,7 +14,7 @@ router.post('/movies', async (req, res) => {
     }
 });
 
-// Get all movies
+
 router.get('/movies', async (req, res) => {
     try {
         const movies = await Movie.find();

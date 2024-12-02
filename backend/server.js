@@ -35,3 +35,7 @@ app.use((err, req, res, next) => {
 const movieRoutes = require('./routes/movieRoutes');
 app.use('/api', movieRoutes);
 
+const authRoutes = require('./routes/authRoutes');
+app.use('/api/auth', authRoutes);
+
+

@@ -1,51 +1,55 @@
 .signup-page {
-    height: 100vh; /* Full viewport height */
+    height: 100vh;
     display: flex;
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
-    background-color: rgb(7, 20, 43); /* Match the landing page background */
+    justify-content: center;
+    align-items: center;
+    background-color: #0e0f1c;
 }
 
 .signup-container {
-    background-color: rgba(255, 255, 255, 0.9); /* White background for the signup box */
-    border-radius: 8px; /* Rounded corners */
-    padding: 20px; /* Padding around the content */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow for depth */
-    width: 300px; /* Width of the signup box */
-    text-align: center; /* Center text inside the box */
+    background-color: rgb(9, 16, 39);
+    border-radius: 8px;
+    padding: 30px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    width: 500px; 
+    max-width: 90%; 
+    color: white;
+    text-align: center;
+}
+
+.signup-container h1 {
+    font-weight: bold;
+    padding-bottom: 20px;
 }
 
 .logo-container {
-    margin-bottom: 20px; /* Space below the logo */
+    margin-bottom: 30px;
 }
 
 .signup-form {
     display: flex;
-    flex-direction: column; /* Arrange inputs vertically */
+    flex-direction: column;
+    gap: 30px;
 }
 
 .signup-form input {
-    margin-bottom: 10px; /* Space between inputs */
-    padding: 10px; /* Padding inside inputs */
-    border: 1px solid #ccc; /* Border color */
-    border-radius: 4px; /* Rounded corners for inputs */
-}
+    padding: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 15px;
+    background-color: rgba(255, 255, 255, 0.1);
+    color: white;
+    font-size: 22px;
 
-.google-signup-button {
-    background-color: #4285F4; /* Google sign-up button color */
-    color: white; /* Button text color */
-    padding: 10px; /* Padding around the button */
-    border: none; /* Remove border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Change cursor to pointer */
-    margin-bottom: 10px; /* Space below the button */
+    min-height: 50px;
 }
 
 .signup-submit-button {
-    background-color: #007bff; /* Submit button color */
-    color: white; /* Submit button text color */
-    padding: 10px; /* Padding around the button */
-    border: none; /* Remove border */
-    border-radius: 4px; /* Rounded corners */
-    cursor: pointer; /* Change cursor to pointer */
+    background-color: #ff8c00;
+    color: white;
+    font-size: 30px;
+    font-weight: bolder;
+    padding: 30px;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
 }
