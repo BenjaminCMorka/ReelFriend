@@ -9,6 +9,8 @@ import {
 } from "../mailtrap/emails.js";
 import { User } from "../models/userModel.js";
 
+
+
 export const signup = async (req, res) => {
 	const { email, password, name } = req.body;
 
@@ -101,7 +103,6 @@ export const login = async (req, res) => {
 
 		generateTokenAndSetCookie(res, user._id);
 
-		user.lastLogin = new Date();
 		await user.save();
 
 		res.status(200).json({
@@ -117,6 +118,38 @@ export const login = async (req, res) => {
 		res.status(400).json({ success: false, message: error.message });
 	}
 };
+export const onboard = async (req, res) => {
+	const {favoriteGenres, favoriteMovies, streamingServices} = req.body;
+	try {
+		const user = await User.findById(req.userId);
+		if (!user) {
+			return res.status(400).json({ success: false, message: "Invalid credentials" });
+		}
+
+		
+		user.favoriteGenres = favoriteGenres;
+		user.favoriteMovies = favoriteMovies;
+		user.streamingServices = streamingServices;
+
+		user.hasOnboarded = true; 
+		await user.save();
+
+		generateTokenAndSetCookie(res, user._id);
+
+		res.status(200).json({
+			success: true,
+			message: "Onboarding completed successfully",
+			user: {
+				...user._doc,
+				password: undefined,
+			},
+		});
+	} catch (error) {
+		console.log("Error in onboard ", error);
+		res.status(400).json({ success: false, message: error.message });
+	}
+};
+
 
 export const logout = async (req, res) => {
 	res.clearCookie("token");

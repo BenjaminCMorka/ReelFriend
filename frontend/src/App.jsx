@@ -7,6 +7,7 @@ import EmailVerificationPage from "./pages/EmailVerificationPage";
 import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
+import LandingPage from "./pages/LandingPage";
 
 import LoadingSpinner from "./components/LoadingSpinner";
 
@@ -34,14 +35,14 @@ const RedirectAuthenticatedUser = ({ children }) => {
 	const { isAuthenticated, user } = useAuthStore();
 
 	if (isAuthenticated && user.isVerified) {
-		return <Navigate to='/' replace />;
+		return <Navigate to='/dashboard' replace />;
 	}
 
 	return children;
 };
 
 function App() {
-	const { isCheckingAuth, checkAuth } = useAuthStore();
+	const { isCheckingAuth, checkAuth, isAuthenticated } = useAuthStore();
 
 	useEffect(() => {
 		checkAuth();
@@ -59,8 +60,15 @@ function App() {
 			<FloatingShape color='bg-purple-500' size='w-32 h-32' top='40%' left='-10%' delay={2} />
 
 			<Routes>
-				<Route
+			<Route
 					path='/'
+					element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />}
+				/>
+
+
+				
+				<Route
+					path='/dashboard'
 					element={
 						<ProtectedRoute>
 							<DashboardPage />

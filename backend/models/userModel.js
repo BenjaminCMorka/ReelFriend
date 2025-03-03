@@ -1,5 +1,8 @@
 import mongoose from "mongoose";
 
+
+
+
 const userSchema = new mongoose.Schema(
 	{
 		email: {
@@ -15,10 +18,6 @@ const userSchema = new mongoose.Schema(
 			type: String,
 			required: true,
 		},
-		lastLogin: {
-			type: Date,
-			default: Date.now,
-		},
 		isVerified: {
 			type: Boolean,
 			default: false,
@@ -27,6 +26,27 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
+		favoriteGenres: {
+			type: [String],
+			default: [],
+		},
+		favoriteMovies: {
+			type: [String],
+			default: [],
+		},
+
+		streamingServices: {
+		type: [String],
+		default: [],
+		},
+		movieType: {
+			type: [String],
+			default: [],
+		},
+
+
+		
+		
 		resetPasswordToken: String,
 		resetPasswordExpiresAt: Date,
 		verificationToken: String,

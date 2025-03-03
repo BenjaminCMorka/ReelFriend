@@ -12,6 +12,26 @@ export const useAuthStore = create((set) => ({
 	isLoading: false,
 	isCheckingAuth: true,
 	message: null,
+	recommendations: [],
+
+	// Fix the updateOnboarding function
+	updateOnboarding: async (favoriteGenres, favoriteMovies, streamingServices) => {
+		set({ isLoading: true, error: null });
+		try {
+			const response = await axios.post(`${API_URL}/onboard`, { favoriteGenres, favoriteMovies,streamingServices });
+			set({
+				isAuthenticated: true,
+				user: response.data.user,
+				error: null,
+				isLoading: false,
+			});
+		} catch (error) {
+			set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
+			throw error;
+		}
+	},
+
+	
 
 	signup: async (email, password, name) => {
 		set({ isLoading: true, error: null });
