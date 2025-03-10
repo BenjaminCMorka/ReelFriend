@@ -57,6 +57,72 @@ export const signup = async (req, res) => {
 	}
 };
 
+export const addToWatchlist = async (req, res) => {
+	const { movieId, movieTitle, posterPath } = req.body;
+	
+	try {
+	  const user = await User.findById(req.userId);
+	  if (!user) {
+		return res.status(400).json({ success: false, message: "User not found" });
+	  }
+	  
+	  // Check if movie is already in watchlist
+	  if (user.watchlist.includes(movieId)) {
+		return res.status(200).json({
+		  success: false,
+		  message: "Movie already in watchlist",
+		  user: {
+			...user._doc,
+			password: undefined,
+		  },
+		});
+	  }
+	  
+	  // Add movie to watchlist
+	  user.watchlist.push(movieId);
+	  await user.save();
+	  
+	  res.status(200).json({
+		success: true,
+		message: "Movie added to watchlist",
+		user: {
+		  ...user._doc,
+		  password: undefined,
+		},
+	  });
+	} catch (error) {
+	  console.log("Error in addToWatchlist ", error);
+	  res.status(400).json({ success: false, message: error.message });
+	}
+  };
+
+  export const removeFromWatchlist = async (req, res) => {
+	const { movieId, movieTitle, posterPath } = req.body;
+	
+	try {
+	  const user = await User.findById(req.userId);
+	  if (!user) {
+		return res.status(400).json({ success: false, message: "User not found" });
+	  }
+	  
+	  // Add movie to watchlist
+	  user.watchlist.filter(id => id !== movieId)
+	  await user.save();
+	  
+	  res.status(200).json({
+		success: true,
+		message: "Movie removed to watchlist",
+		user: {
+		  ...user._doc,
+		  password: undefined,
+		},
+	  });
+	} catch (error) {
+	  console.log("Error in removeFromWatchlist ", error);
+	  res.status(400).json({ success: false, message: error.message });
+	}
+  };
+
 export const verifyEmail = async (req, res) => {
 	const { code } = req.body;
 	try {
@@ -126,7 +192,7 @@ export const onboard = async (req, res) => {
 			return res.status(400).json({ success: false, message: "Invalid credentials" });
 		}
 
-		
+		// Add hasOnboarded flag to mark user as onboarded
 		user.favoriteGenres = favoriteGenres;
 		user.favoriteMovies = favoriteMovies;
 		user.streamingServices = streamingServices;

@@ -32,7 +32,8 @@
     "mailtrap": "^3.4.0",
     "mongodb": "^6.13.0",
     "mongoose": "^8.10.0",
-    "python-shell": "^5.0.0"
+    "python-shell": "^5.0.0",
+    "react-icons": "^5.5.0"
   },
   "devDependencies": {
     "autoprefixer": "^10.4.20",

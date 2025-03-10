@@ -8,6 +8,9 @@ import {
 	resetPassword,
 	checkAuth,
 	onboard,
+	addToWatchlist,
+	removeFromWatchlist
+
 } from "../controllers/authController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
 
@@ -24,5 +27,7 @@ router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 
 router.post("/reset-password/:token", resetPassword);
+router.post("/watchlist/add", verifyToken, addToWatchlist);
+router.post("/watchlist/remove", verifyToken, removeFromWatchlist);
 
 export default router;

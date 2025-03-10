@@ -34,15 +34,31 @@ const userSchema = new mongoose.Schema(
 			type: [String],
 			default: [],
 		},
+		watchlist: {
+			type: [String],
+			default: [],
+		},
+		watchedMovies: {
+			type: [{
+			  movieId: {
+				type: String,
+				required: true
+			  },
+			  rating: {
+				type: Number,
+				min: 0,
+				max: 5,
+				default: 0 
+			  },
+			}],
+			default: []
+		  },
 
 		streamingServices: {
 		type: [String],
 		default: [],
 		},
-		movieType: {
-			type: [String],
-			default: [],
-		},
+
 
 
 		

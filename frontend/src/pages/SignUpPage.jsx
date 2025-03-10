@@ -25,7 +25,16 @@ const SignUpPage = () => {
 		}
 	};
 	return (
+		<div className="min-h-screen w-full bg-gray-950 flex flex-col">
+			{/* ReelFriend Text (Now Positioned at the Top Left of the Whole Page) */}
+			<Link
+				to="/"
+				className="absolute top-6 left-6 text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-700 text-transparent bg-clip-text hover:opacity-80 transition-opacity"
+			>
+				ReelFriend
+			</Link>
 		
+		<div className="flex justify-center items-center flex-1">
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
 			animate={{ opacity: 1, y: 0 }}
@@ -42,21 +51,21 @@ const SignUpPage = () => {
 
 				<form onSubmit={handleSignUp}>
 					<Input
-						icon={User}
+						icon={(props) => <User {...props} className="text-purple-400" />}
 						type="text"
 						placeholder="What should I call you?"
 						value={name}
 						onChange={(e) => setName(e.target.value)}
 					/>
 					<Input
-						icon={Mail}
+						icon={(props) => <Mail {...props} className="text-purple-400" />}
 						type="email"
 						placeholder="What's your Email Address?"
 						value={email}
 						onChange={(e) => setEmail(e.target.value)}
 					/>
 					<Input
-						icon={Lock}
+						icon={(props) => <Lock {...props} className="text-purple-400" />}
 						type="password"
 						placeholder="Choose a secret password - between us!"
 						value={password}
@@ -87,7 +96,8 @@ const SignUpPage = () => {
 					</Link>
 				</p>
 			</div>
-		</motion.div>
+		</motion.div> </div>
+		</div>
 	);
 };
 export default SignUpPage;

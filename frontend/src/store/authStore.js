@@ -8,9 +8,11 @@ axios.defaults.withCredentials = true;
 export const useAuthStore = create((set) => ({
 	user: null,
 	isAuthenticated: false,
+
 	error: null,
 	isLoading: false,
 	isCheckingAuth: true,
+	hasWelcomed: false,
 	message: null,
 	recommendations: [],
 
@@ -21,15 +23,82 @@ export const useAuthStore = create((set) => ({
 			const response = await axios.post(`${API_URL}/onboard`, { favoriteGenres, favoriteMovies,streamingServices });
 			set({
 				isAuthenticated: true,
+		
 				user: response.data.user,
 				error: null,
 				isLoading: false,
+
 			});
 		} catch (error) {
 			set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
 			throw error;
 		}
 	},
+
+	addToWatchlist: async (movieId, movieTitle, posterPath) => {
+		set({ isLoading: true, error: null });
+		
+		// Check if movie is already in watchlist
+		const { user } = useAuthStore.getState();
+		if (user && user.watchlist && user.watchlist.includes(movieId)) {
+		  set({ isLoading: false });
+		  return { success: false, message: "Movie already in watchlist" };
+		}
+		
+		try {
+		  const response = await axios.post(`${API_URL}/watchlist/add`, { 
+			movieId, 
+			movieTitle, 
+			posterPath 
+		  });
+		  set({
+			user: response.data.user,
+			error: null,
+			isLoading: false,
+		  });
+		  return response.data;
+		} catch (error) {
+		  set({ 
+			error: error.response?.data?.message || "Error adding to watchlist", 
+			isLoading: false 
+		  });
+		  throw error;
+		}
+	  },
+
+	  removeFromWatchlist: async (movieId, movieTitle, posterPath) => {
+		set({ isLoading: true, error: null });
+		
+		try {
+		  const response = await axios.post(`${API_URL}/watchlist/remove`, { 
+			movieId, 
+			movieTitle, 
+			posterPath 
+		  });
+		  set({
+			user: response.data.user,
+			error: null,
+			isLoading: false,
+		  });
+		  return response.data;
+		} catch (error) {
+		  set({ 
+			error: error.response?.data?.message || "Error removing from watchlist", 
+			isLoading: false 
+		  });
+		  throw error;
+		}
+	  },
+
+	  isInWatchlist: (movieId) => {
+		const { user } = useAuthStore.getState();
+		if (!user || !user.watchlist) return false;
+		
+		// Check if the movie ID exists in the user's watchlist
+		return user.watchlist.includes(movieId);
+	  },
+	
+
 
 	
 

@@ -8,12 +8,18 @@ import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LandingPage from "./pages/LandingPage";
+import WatchlistPage from "./pages/WatchlistPage";
+import AboutPage from "./pages/AboutPage";
+import AccountPage from "./pages/AccountPage";
+import FindSimilarPage from "./pages/FindSimilarPage";
+import SearchResultsPage from "./pages/SearchResultsPage";
 
 import LoadingSpinner from "./components/LoadingSpinner";
 
 import { Toaster } from "react-hot-toast";
 import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
+import OnboardingPage from "./pages/OnboardingPage";
 
 // protect routes that require authentication
 const ProtectedRoute = ({ children }) => {
@@ -30,19 +36,59 @@ const ProtectedRoute = ({ children }) => {
 	return children;
 };
 
-// redirect authenticated users to the home page
+
+const ProtectLanding = ({ children }) => {
+	const { isAuthenticated } = useAuthStore();
+
+	if (isAuthenticated) {
+		return <Navigate to="/dashboard" replace />;
+	}
+
+	return children;
+};
+const ProtectDashboard = ({ children }) => {
+	const { isAuthenticated, user } = useAuthStore();
+
+	if (!isAuthenticated || !user.hasOnboarded) {
+		return <Navigate to="/login" replace />;
+	}
+
+	return children;
+};
+
+const ProtectAuth = ({ children }) => {
+	const { isAuthenticated } = useAuthStore();
+
+	if (isAuthenticated) {
+		return <Navigate to="/dashboard" replace />;
+	}
+
+	return children;
+};
+
+
+// prevent authenticated users from accessing auth pages
 const RedirectAuthenticatedUser = ({ children }) => {
 	const { isAuthenticated, user } = useAuthStore();
 
-	if (isAuthenticated && user.isVerified) {
+	if (isAuthenticated && user.isVerified && !user.hasOnboarded) {
+		return <Navigate to='/onboard' replace />;
+	}
+	else if (isAuthenticated && user.isVerified && user.hasOnboarded){
 		return <Navigate to='/dashboard' replace />;
 	}
 
 	return children;
 };
 
+
+
+
 function App() {
-	const { isCheckingAuth, checkAuth, isAuthenticated } = useAuthStore();
+	const { isCheckingAuth, checkAuth } = useAuthStore();
+
+
+
 
 	useEffect(() => {
 		checkAuth();
@@ -51,67 +97,35 @@ function App() {
 	if (isCheckingAuth) return <LoadingSpinner />;
 
 	return (
-		<div
-			className='min-h-screen bg-gradient-to-br
-    from-purple-900 via-blue-900 to-purple-900 flex items-center justify-center relative overflow-hidden'
-		>
-			<FloatingShape color='bg-purple-500' size='w-64 h-64' top='-5%' left='10%' delay={0} />
-			<FloatingShape color='bg-purple-500' size='w-48 h-48' top='70%' left='80%' delay={5} />
-			<FloatingShape color='bg-purple-500' size='w-32 h-32' top='40%' left='-10%' delay={2} />
+		<div className='min-h-screen bg-gradient-to-br from-gray-950 via-gray-950-900 to-gray-950 flex items-center justify-center relative overflow-hidden'>
+			<FloatingShape color='bg-purple-600' size='w-64 h-64' top='-5%' left='10%' delay={0} />
+			<FloatingShape color='bg-blue-500' size='w-64 h-64' top='70%' left='80%' delay={5} />
+			<FloatingShape color='bg-purple-600' size='w-48 h-48' top='40%' left='-10%' delay={2} />
 
 			<Routes>
-			<Route
-					path='/'
-					element={isAuthenticated ? <Navigate to="/dashboard" /> : <LandingPage />}
-				/>
+				{/* Landing Page (always accessible) */}
+				<Route path='/' element={<ProtectLanding><LandingPage /></ProtectLanding>} />
 
-
-				
-				<Route
-					path='/dashboard'
-					element={
-						<ProtectedRoute>
-							<DashboardPage />
-						</ProtectedRoute>
-					}
-				/>
-				<Route
-					path='/signup'
-					element={
-						<RedirectAuthenticatedUser>
-							<SignUpPage />
-						</RedirectAuthenticatedUser>
-					}
-				/>
-				<Route
-					path='/login'
-					element={
-						<RedirectAuthenticatedUser>
-							<LoginPage />
-						</RedirectAuthenticatedUser>
-					}
-				/>
+				{/* Auth Routes (only accessible if NOT logged in) */}
+				<Route path='/signup' element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
+				<Route path='/login' element={<RedirectAuthenticatedUser><ProtectAuth><LoginPage /> </ProtectAuth></RedirectAuthenticatedUser>} />
 				<Route path='/verify-email' element={<EmailVerificationPage />} />
-				<Route
-					path='/forgot-password'
-					element={
-						<RedirectAuthenticatedUser>
-							<ForgotPasswordPage />
-						</RedirectAuthenticatedUser>
-					}
-				/>
+				<Route path='/forgot-password' element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />
+				<Route path='/reset-password/:token' element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
 
-				<Route
-					path='/reset-password/:token'
-					element={
-						<RedirectAuthenticatedUser>
-							<ResetPasswordPage />
-						</RedirectAuthenticatedUser>
-					}
-				/>
-				{/* catch all routes */}
+				{/* Protected Dashboard (only accessible when authenticated) */}
+				<Route path='/onboard' element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
+				<Route path='/dashboard' element={<ProtectDashboard><DashboardPage/> </ProtectDashboard>} />
+				<Route path='/watchlist' element={<ProtectedRoute><WatchlistPage/></ProtectedRoute>} />
+				<Route path='/about' element={<ProtectedRoute><AboutPage/></ProtectedRoute>} />
+				<Route path='/find-similar' element={<ProtectedRoute><FindSimilarPage/></ProtectedRoute>} />
+				<Route path='/account' element={<ProtectedRoute><AccountPage/></ProtectedRoute>} />
+				<Route path="/search/:query" element={<SearchResultsPage />} />
+
+				{/* Catch-all Route: Redirect unknown paths to Landing Page */}
 				<Route path='*' element={<Navigate to='/' replace />} />
 			</Routes>
+
 			<Toaster />
 		</div>
 	);
