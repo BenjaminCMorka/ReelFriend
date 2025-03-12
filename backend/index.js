@@ -5,7 +5,6 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { connectDB } from "./db/connectDB.js";
 import authRoutes from "./routes/authRoute.js";
-
 import recommenderRoutes from "./routes/recommenderRoute.js";
 import { spawn } from "child_process";
 import { fileURLToPath } from "url";
@@ -21,7 +20,7 @@ app.use(express.json());
 app.use(cookieParser());
 
 app.use("/api/auth", authRoutes);
-
+app.use("/api/recommender", recommenderRoutes);
 
 if (process.env.NODE_ENV === "production") {
     app.use(express.static(path.join(__dirname, "/frontend/dist")));

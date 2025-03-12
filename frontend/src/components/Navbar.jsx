@@ -45,7 +45,7 @@ const Navbar = () => {
         </NavItem>
         <Separator />
         <NavItem to="/find-similar" currentPath={location.pathname}>
-          Find Similar Movie
+          Find Similar Movies
         </NavItem>
         <Separator />
         <NavItem to="/watchlist" currentPath={location.pathname}>
