@@ -39,7 +39,7 @@ export const signup = async (req, res) => {
 
 		await user.save();
 
-		// jwt
+
 		generateTokenAndSetCookie(res, user._id);
 
 		await sendVerificationEmail(user.email, verificationToken);
@@ -66,7 +66,7 @@ export const addToWatchlist = async (req, res) => {
 		return res.status(400).json({ success: false, message: "User not found" });
 	  }
 	  
-	  // Check if movie is already in watchlist
+	  // check if movie is already in watchlist
 	  if (user.watchlist.includes(movieId)) {
 		return res.status(200).json({
 		  success: false,
@@ -78,7 +78,7 @@ export const addToWatchlist = async (req, res) => {
 		});
 	  }
 	  
-	  // Add movie to watchlist
+	  // add movie to watchlist
 	  user.watchlist.push(movieId);
 	  await user.save();
 	  
@@ -97,7 +97,7 @@ export const addToWatchlist = async (req, res) => {
   };
 
   export const removeFromWatchlist = async (req, res) => {
-	const { movieId, movieTitle, posterPath } = req.body;
+	const { movieId } = req.body;
 	
 	try {
 	  const user = await User.findById(req.userId);
@@ -105,13 +105,23 @@ export const addToWatchlist = async (req, res) => {
 		return res.status(400).json({ success: false, message: "User not found" });
 	  }
 	  
-	  // Add movie to watchlist
-	  user.watchlist.filter(id => id !== movieId)
+	  // remove movie from watchlist
+	  const initialWatchlistLength = user.watchlist.length;
+	  user.watchlist = user.watchlist.filter(id => id !== String(movieId));
+	  
+	  // check if the movie was actually removed
+	  if (user.watchlist.length === initialWatchlistLength) {
+		return res.status(400).json({ 
+		  success: false, 
+		  message: "Movie not found in watchlist" 
+		});
+	  }
+	  
 	  await user.save();
 	  
 	  res.status(200).json({
 		success: true,
-		message: "Movie removed to watchlist",
+		message: "Movie removed from watchlist",
 		user: {
 		  ...user._doc,
 		  password: undefined,
@@ -122,7 +132,6 @@ export const addToWatchlist = async (req, res) => {
 	  res.status(400).json({ success: false, message: error.message });
 	}
   };
-
 export const verifyEmail = async (req, res) => {
 	const { code } = req.body;
 	try {
@@ -185,19 +194,18 @@ export const login = async (req, res) => {
 	}
 };
 export const onboard = async (req, res) => {
-	const {favoriteGenres, favoriteMovies, streamingServices} = req.body;
+	const { favoriteMovies } = req.body;
+
 	try {
 		const user = await User.findById(req.userId);
 		if (!user) {
 			return res.status(400).json({ success: false, message: "Invalid credentials" });
 		}
 
-		// Add hasOnboarded flag to mark user as onboarded
-		user.favoriteGenres = favoriteGenres;
+		// update user with favoriteMovies and set onboarding flag
 		user.favoriteMovies = favoriteMovies;
-		user.streamingServices = streamingServices;
+		user.hasOnboarded = true;
 
-		user.hasOnboarded = true; 
 		await user.save();
 
 		generateTokenAndSetCookie(res, user._id);
@@ -211,10 +219,11 @@ export const onboard = async (req, res) => {
 			},
 		});
 	} catch (error) {
-		console.log("Error in onboard ", error);
+		console.error("Error in onboard:", error);
 		res.status(400).json({ success: false, message: error.message });
 	}
 };
+
 
 
 export const logout = async (req, res) => {
@@ -231,7 +240,7 @@ export const forgotPassword = async (req, res) => {
 			return res.status(400).json({ success: false, message: "User not found" });
 		}
 
-		// Generate reset token
+		// generate reset token
 		const resetToken = crypto.randomBytes(20).toString("hex");
 		const resetTokenExpiresAt = Date.now() + 1 * 60 * 60 * 1000; // 1 hour
 
@@ -247,6 +256,55 @@ export const forgotPassword = async (req, res) => {
 	} catch (error) {
 		console.log("Error in forgotPassword ", error);
 		res.status(400).json({ success: false, message: error.message });
+	}
+};
+export const updateProfile = async (req, res) => {
+	const { name, email, currentPassword, newPassword } = req.body;
+	
+	try {
+	  const user = await User.findById(req.userId);
+	  if (!user) {
+		return res.status(404).json({ success: false, message: "User not found" });
+	  }
+	  
+	  // update name if provided
+	  if (name) {
+		user.name = name;
+	  }
+	  
+	  // update email if provided
+	  if (email && email !== user.email) {
+		const existingUser = await User.findOne({ email });
+		if (existingUser) {
+		  return res.status(400).json({ success: false, message: "Email already in use" });
+		}
+		user.email = email;
+	  }
+	  
+	  // update password if provided
+	  if (newPassword && currentPassword) {
+		const isPasswordValid = await bcryptjs.compare(currentPassword, user.password);
+		if (!isPasswordValid) {
+		  return res.status(400).json({ success: false, message: "Current password is incorrect" });
+		}
+		
+		const hashedPassword = await bcryptjs.hash(newPassword, 10);
+		user.password = hashedPassword;
+	  }
+	  
+	  await user.save();
+	  
+	  res.status(200).json({
+		success: true,
+		message: "Profile updated successfully",
+		user: {
+		  ...user._doc,
+		  password: undefined,
+		},
+	  });
+	} catch (error) {
+	  console.error("Error in updateProfile:", error);
+	  res.status(500).json({ success: false, message: error.message || "Server error" });
 	}
 };
 
@@ -293,4 +351,99 @@ export const checkAuth = async (req, res) => {
 		console.log("Error in checkAuth ", error);
 		res.status(400).json({ success: false, message: error.message });
 	}
+};
+
+export const markMovieAsWatched = async (req, res) => {
+    const { movieId, rating } = req.body;
+    
+    console.log('Received mark movie as watched request:', { 
+        userId: req.userId, 
+        movieId, 
+        rating 
+    });
+    
+    try {
+        const user = await User.findById(req.userId);
+        if (!user) {
+            console.error('User not found for ID:', req.userId);
+            return res.status(400).json({ 
+                success: false, 
+                message: "User not found" 
+            });
+        }
+        
+        // Validate inputs
+        if (!movieId) {
+            console.error('Missing movie ID');
+            return res.status(400).json({ 
+                success: false, 
+                message: "Movie ID is required" 
+            });
+        }
+        
+        if (rating === undefined || rating === null) {
+            console.error('Missing or invalid rating');
+            return res.status(400).json({ 
+                success: false, 
+                message: "Rating is required" 
+            });
+        }
+        
+        // check if the movie is already in watched movies
+        const existingWatchedMovie = user.watchedMovies.find(
+            movie => movie.movieId === String(movieId)
+        );
+        
+        if (existingWatchedMovie) {
+            // update existing rating
+            existingWatchedMovie.rating = rating;
+            existingWatchedMovie.watchedAt = new Date();
+        } else {
+            // add new watched movie
+            user.watchedMovies.push({
+                movieId: String(movieId),
+                rating: rating,
+                watchedAt: new Date()
+            });
+        }
+        
+        // flag that embeddings need to be updated
+        if (user.modelTrainingStatus) {
+            user.modelTrainingStatus.embeddingsUpdated = false;
+        } else {
+            user.modelTrainingStatus = {
+                embeddingsUpdated: false
+            };
+        }
+        
+        // remove from watchlist if it exists
+        user.watchlist = user.watchlist.filter(id => id !== String(movieId));
+        
+        try {
+            await user.save();
+            
+            console.log('Successfully marked movie as watched');
+            
+            res.status(200).json({
+                success: true,
+                message: "Movie marked as watched",
+                user: {
+                    ...user._doc,
+                    password: undefined,
+                },
+            });
+        } catch (saveError) {
+            console.error('Error saving user document:', saveError);
+            res.status(500).json({ 
+                success: false, 
+                message: "Error saving user data" 
+            });
+        }
+    } catch (error) {
+        console.error('Unexpected error in markMovieAsWatched:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: "Unexpected error occurred" 
+        });
+    }
 };

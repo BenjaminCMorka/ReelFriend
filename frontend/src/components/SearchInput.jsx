@@ -1,5 +1,3 @@
-// src/components/ui/input.js
-
 const SearchInput = ({ className, ...props }) => {
     return (
         <input 

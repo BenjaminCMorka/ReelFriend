@@ -1,8 +1,6 @@
 import mongoose from "mongoose";
 
 
-
-
 const userSchema = new mongoose.Schema(
 	{
 		email: {
@@ -26,10 +24,6 @@ const userSchema = new mongoose.Schema(
 			type: Boolean,
 			default: false,
 		},
-		favoriteGenres: {
-			type: [String],
-			default: [],
-		},
 		favoriteMovies: {
 			type: [String],
 			default: [],
@@ -39,29 +33,37 @@ const userSchema = new mongoose.Schema(
 			default: [],
 		},
 		watchedMovies: {
-			type: [{
-			  movieId: {
-				type: String,
-				required: true
-			  },
-			  rating: {
-				type: Number,
-				min: 0,
-				max: 5,
-				default: 0 
-			  },
-			}],
-			default: []
-		  },
-
-		streamingServices: {
-		type: [String],
-		default: [],
+            type: [{
+                movieId: {
+                    type: String,
+                    required: true
+                },
+                rating: {
+                    type: Number,
+                    min: 0,
+                    max: 5,
+                    default: 0 
+                },
+                watchedAt: {
+                    type: Date,
+                    default: Date.now
+                }
+            }],
+            default: []
+        },
+		modelTrainingStatus: {
+			lastTrainedAt: {
+			type: Date
+			},
+			ratedMoviesCount: {
+			type: Number,
+			default: 0
+			},
+			embeddingsUpdated: {
+				type: Boolean,
+				default: false
+			},
 		},
-
-
-
-		
 		
 		resetPasswordToken: String,
 		resetPasswordExpiresAt: Date,

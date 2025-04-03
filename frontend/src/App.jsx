@@ -11,7 +11,6 @@ import LandingPage from "./pages/LandingPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import AboutPage from "./pages/AboutPage";
 import AccountPage from "./pages/AccountPage";
-import FindSimilarPage from "./pages/FindSimilarPage";
 import SearchResultsPage from "./pages/SearchResultsPage";
 
 import LoadingSpinner from "./components/LoadingSpinner";
@@ -21,7 +20,7 @@ import { useAuthStore } from "./store/authStore";
 import { useEffect } from "react";
 import OnboardingPage from "./pages/OnboardingPage";
 
-// protect routes that require authentication
+// protect routes which need authentication
 const ProtectedRoute = ({ children }) => {
 	const { isAuthenticated, user } = useAuthStore();
 
@@ -103,26 +102,25 @@ function App() {
 			<FloatingShape color='bg-purple-600' size='w-48 h-48' top='40%' left='-10%' delay={2} />
 
 			<Routes>
-				{/* Landing Page (always accessible) */}
+
 				<Route path='/' element={<ProtectLanding><LandingPage /></ProtectLanding>} />
 
-				{/* Auth Routes (only accessible if NOT logged in) */}
+				{/* only when not logged in */}
 				<Route path='/signup' element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
 				<Route path='/login' element={<RedirectAuthenticatedUser><ProtectAuth><LoginPage /> </ProtectAuth></RedirectAuthenticatedUser>} />
 				<Route path='/verify-email' element={<EmailVerificationPage />} />
 				<Route path='/forgot-password' element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />
 				<Route path='/reset-password/:token' element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
 
-				{/* Protected Dashboard (only accessible when authenticated) */}
+				{/* only when logged in */}
 				<Route path='/onboard' element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />
 				<Route path='/dashboard' element={<ProtectDashboard><DashboardPage/> </ProtectDashboard>} />
 				<Route path='/watchlist' element={<ProtectedRoute><WatchlistPage/></ProtectedRoute>} />
 				<Route path='/about' element={<ProtectedRoute><AboutPage/></ProtectedRoute>} />
-				<Route path='/find-similar' element={<ProtectedRoute><FindSimilarPage/></ProtectedRoute>} />
 				<Route path='/account' element={<ProtectedRoute><AccountPage/></ProtectedRoute>} />
 				<Route path="/search/:query" element={<SearchResultsPage />} />
 
-				{/* Catch-all Route: Redirect unknown paths to Landing Page */}
+				{/* if its an unknown path go to landing page */}
 				<Route path='*' element={<Navigate to='/' replace />} />
 			</Routes>
 

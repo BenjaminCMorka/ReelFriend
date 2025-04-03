@@ -1,0 +1,200 @@
+[
+  {
+    "timestamp": "2025-03-31 22:19:06",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8019689156505713,
+      "mae": 0.6123615583993763,
+      "training_time": 122.97339391708374
+    }
+  },
+  {
+    "timestamp": "2025-03-31 22:22:34",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8002578490852428,
+      "mae": 0.6077906721549013,
+      "training_time": 123.76831889152527
+    }
+  },
+  {
+    "timestamp": "2025-03-31 22:28:15",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.7997440148957362,
+      "mae": 0.6067583398100688,
+      "training_time": 148.80757808685303
+    }
+  },
+  {
+    "timestamp": "2025-03-31 23:03:06",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8000437107534566,
+      "mae": 0.607112574812582,
+      "training_time": 121.25893306732178
+    }
+  },
+  {
+    "timestamp": "2025-04-01 17:13:16",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8029309664634865,
+      "mae": 0.6081056839970075,
+      "training_time": 100.39886498451233
+    }
+  },
+  {
+    "timestamp": "2025-04-01 19:08:59",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8014657239480194,
+      "mae": 0.6083927510431105,
+      "training_time": 105.13576292991638
+    }
+  },
+  {
+    "timestamp": "2025-04-01 19:09:18",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8026131797205398,
+      "mae": 0.611147583589011,
+      "training_time": 124.84324979782104
+    }
+  },
+  {
+    "timestamp": "2025-04-01 19:11:26",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.7999209751949587,
+      "mae": 0.6066219564268676,
+      "training_time": 252.63865399360657
+    }
+  },
+  {
+    "timestamp": "2025-04-01 19:16:49",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8023140079694757,
+      "mae": 0.6125356051856589,
+      "training_time": 95.42672991752625
+    }
+  },
+  {
+    "timestamp": "2025-04-01 19:16:52",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8017567926250158,
+      "mae": 0.6084593909747162,
+      "training_time": 98.8184609413147
+    }
+  },
+  {
+    "timestamp": "2025-04-01 19:17:17",
+    "configuration": {
+      "embedding_dim": 128,
+      "batch_size": 256,
+      "learning_rate": 0.003860236071533239,
+      "dropout_rate": 0.36117190001639143,
+      "l2_reg": 7.523419411638007e-06,
+      "use_bias": true,
+      "use_features": true,
+      "use_time_features": true
+    },
+    "metrics": {
+      "rmse": 0.8016765948471419,
+      "mae": 0.6121204980944225,
+      "training_time": 123.35620594024658
+    }
+  }
+]

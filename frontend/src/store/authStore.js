@@ -16,11 +16,67 @@ export const useAuthStore = create((set) => ({
 	message: null,
 	recommendations: [],
 
+
+    markMovieAsWatched: async (movieId, rating) => {
+		set({ isLoading: true, error: null });
+		
+		try {
+			console.log('Attempting to mark movie as watched:', { movieId, rating });
+			
+			const response = await axios.post(`${API_URL}/mark-watched`, { 
+				movieId: String(movieId), 
+				rating 
+			}, {
+		
+				validateStatus: function (status) {
+					return status >= 200 && status < 300; 
+				}
+			});
+			
+			console.log('Mark movie as watched response:', response);
+			
+			if (response.data.success) {
+				set({
+					user: response.data.user,
+					error: null,
+					isLoading: false
+				});
+				
+				return response.data;
+			} else {
+				
+				const errorMessage = response.data.message || "Failed to mark movie as watched";
+				set({ 
+					error: errorMessage, 
+					isLoading: false 
+				});
+				throw new Error(errorMessage);
+			}
+		} catch (error) {
+			console.error('Error in markMovieAsWatched:', {
+				errorResponse: error.response,
+				errorMessage: error.message,
+				errorStack: error.stack
+			});
+			
+			const errorMessage = error.response?.data?.message || 
+								 error.message || 
+								 "Error marking movie as watched";
+			
+			set({ 
+				error: errorMessage, 
+				isLoading: false 
+			});
+			
+			throw error;
+		}
+	},
+
 	// Fix the updateOnboarding function
 	updateOnboarding: async (favoriteGenres, favoriteMovies, streamingServices) => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axios.post(`${API_URL}/onboard`, { favoriteGenres, favoriteMovies,streamingServices });
+			const response = await axios.post(`${API_URL}/onboard`, { favoriteGenres, favoriteMovies, streamingServices });
 			set({
 				isAuthenticated: true,
 		
@@ -38,7 +94,7 @@ export const useAuthStore = create((set) => ({
 	addToWatchlist: async (movieId, movieTitle, posterPath) => {
 		set({ isLoading: true, error: null });
 		
-		// Check if movie is already in watchlist
+		// check if movie is already in watchlist
 		const { user } = useAuthStore.getState();
 		if (user && user.watchlist && user.watchlist.includes(movieId)) {
 		  set({ isLoading: false });
@@ -94,7 +150,7 @@ export const useAuthStore = create((set) => ({
 		const { user } = useAuthStore.getState();
 		if (!user || !user.watchlist) return false;
 		
-		// Check if the movie ID exists in the user's watchlist
+		// check if the movie ID exists in user's watchlist
 		return user.watchlist.includes(movieId);
 	  },
 	

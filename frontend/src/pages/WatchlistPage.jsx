@@ -4,8 +4,6 @@ import Navbar from "../components/Navbar";
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'react-hot-toast';
 
-
-
 const WatchlistPage = () => {
   const [watchlistMovies, setWatchlistMovies] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -19,7 +17,7 @@ const WatchlistPage = () => {
   const { user, isAuthenticated, removeFromWatchlist } = useAuthStore();
   const navigate = useNavigate();
 
-  // Fetch movie details for each movie in the watchlist
+  
   useEffect(() => {
     const fetchWatchlistMovies = async () => {
       if (!isAuthenticated || !user || !user.watchlist || user.watchlist.length === 0) {
@@ -40,7 +38,7 @@ const WatchlistPage = () => {
         const moviesData = await Promise.all(moviePromises);
         setWatchlistMovies(moviesData);
         
-        // Fetch trailers for each movie
+
         moviesData.forEach(movie => {
           fetchTrailer(movie.id);
         });
@@ -55,7 +53,7 @@ const WatchlistPage = () => {
     fetchWatchlistMovies();
   }, [isAuthenticated, user]);
 
-  // Function to fetch trailers for each movie
+  // fetch trailer for each movie if possible
   const fetchTrailer = async (movieId) => {
     const apiKey = '7a0553e66258137e7f70085c7dde6cbc';
     const url = `https://api.themoviedb.org/3/movie/${movieId}/videos?api_key=${apiKey}`;
@@ -100,7 +98,7 @@ const WatchlistPage = () => {
         toast.error(result.message || 'Failed to remove from watchlist');
       } else {
         toast.success(`Removed "${movie.title || movie.name}" from your watchlist!`);
-        // Update local state to remove the movie from the UI immediately
+        // remove movie from ui asap
         setWatchlistMovies(prevMovies => prevMovies.filter(m => m.id !== movie.id));
       }
     } catch (err) {
@@ -110,7 +108,6 @@ const WatchlistPage = () => {
   };
 
   const openRatingModal = (movieId, event) => {
-    // Get the button's position to place the modal near it
     const buttonRect = event.currentTarget.getBoundingClientRect();
     setModalPosition({
       top: buttonRect.top + window.scrollY,
@@ -124,35 +121,43 @@ const WatchlistPage = () => {
 
   const handleRatingSubmit = async () => {
     try {
-      // This would call an API to save the rating
-      // For now, let's just show a success message
-      const movieTitle = watchlistMovies.find(movie => movie.id === currentMovieId)?.title;
-      toast.success(`You rated "${movieTitle}" ${currentRating} stars!`);
-      
-      // Remove from watchlist after rating
-      setWatchlistMovies(prevMovies => prevMovies.filter(movie => movie.id !== currentMovieId));
-      setShowRatingModal(false);
-      
-      // In a real implementation, you would call your backend API:
-      // await axios.post('/api/movies/rate', { movieId: currentMovieId, rating: currentRating });
+        const movieTitle = watchlistMovies.find(movie => movie.id === currentMovieId)?.title;
+        
+
+        await useAuthStore.getState().markMovieAsWatched(currentMovieId, currentRating);
+        
+        toast.success(`You rated "${movieTitle}" ${currentRating} stars!`);
+        
+        // remove from watchlist after rating
+        setWatchlistMovies(prevMovies => prevMovies.filter(movie => movie.id !== currentMovieId));
+        setShowRatingModal(false);
     } catch (err) {
-      console.error('Error submitting rating:', err);
-      toast.error('Failed to submit rating. Please try again.');
+        console.error('Error submitting rating:', err);
+        toast.error('Failed to submit rating. Please try again.');
     }
   };
 
   return (
     <div className="min-h-screen flex flex-col">
-      {/* Navbar stays fixed at top */}
+    
       <Navbar />
       
-      {/* Main content */}
-      <div className="container mx-auto text-white mt-25 mb-8 px-4">
+     
+      <div className="container mx-auto text-white mt-20 mb-8 px-4">
         <h1 className="text-3xl font-bold mb-6 pt-4">Your Watchlist</h1>
-        <hr className="border-t-2 border-white mb-6" />
+        <hr className="border-t border-gray-800 mb-6" />
 
-        {loading && <p>Loading your watchlist...</p>}
-        {error && <p className="text-red-500">{error}</p>}
+        {loading && (
+          <div className="text-center py-8">
+            <div className="animate-pulse flex flex-col items-center">
+              <div className="h-8 w-64 bg-gray-700 rounded mb-4"></div>
+              <div className="h-4 w-48 bg-gray-700 rounded"></div>
+            </div>
+            <p className="mt-4">Loading your watchlist...</p>
+          </div>
+        )}
+
+        {error && <p className="text-red-500 p-4 bg-red-900/50 border border-red-700 rounded">{error}</p>}
         
         {!loading && watchlistMovies.length === 0 && (
           <div className="text-center py-12">
@@ -175,7 +180,7 @@ const WatchlistPage = () => {
               <div key={movie.id} className="movie-container flex flex-col">
                 <div className="movie-card relative group border border-[#1a2238] rounded-lg p-4 bg-gradient-to-b from-[#050810] to-[#100434] hover:bg-[#12172b] transition-all h-64 overflow-hidden">
                   <div className="flex h-full">
-                    {/* Movie Image */}
+            
                     <div className="movie-image-container h-full w-32 flex-shrink-0">
                       <img
                         src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
@@ -184,67 +189,78 @@ const WatchlistPage = () => {
                       />
                     </div>
 
-                    {/* Movie Info Section */}
+  
                     <div className="ml-4 flex flex-col justify-between flex-grow overflow-hidden">
                       <h3 className="text-xl font-semibold truncate max-w-full">{movie.title}</h3>
                       <p className="text-sm text-gray-400">{releaseYear}</p>
-                      <p className="text-sm text-gray-400">{genres}</p>
+                      <p className="text-sm text-gray-400 truncate">{genres}</p>
                     </div>
                   </div>
 
-                  {/* Trailer Overlay */}
+          
                   <div 
-                    className={`absolute top-0 left-0 w-full h-full bg-cover bg-center flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0 ${trailers[movie.id] ? '' : 'bg-black'}`}
+                    className="absolute top-0 left-0 w-full h-full bg-cover bg-center flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-0"
                     style={{
-                      backgroundImage: `url(https://image.tmdb.org/t/p/w500${movie.poster_path})`,
+                      backgroundImage: `linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url(https://image.tmdb.org/t/p/w500${movie.poster_path})`,
                     }}
                   >
-                    {trailers[movie.id] && (
+                    {trailers[movie.id] ? (
                       <a href={trailers[movie.id]} target="_blank" rel="noopener noreferrer">
-                        <button className="bg-red-500 text-white py-2 px-4 rounded-lg">
+                        <button className="bg-red-600 hover:bg-red-700 text-white py-2 px-4 rounded-lg shadow-lg transform hover:scale-105 transition-transform">
                           Watch Trailer
                         </button>
                       </a>
+                    ) : (
+                      <div className="text-white text-lg font-semibold">
+                        No Trailer Available
+                      </div>
                     )}
                   </div>
                 </div>
 
-                <div className="flex justify-between bg-black border border-gray-900 items-center space-x-4 relative z-10">
-                  {/* Remove from watchlist button */}
+                
+                <div className="flex justify-between items-center bg-gray-900 border-t border-gray-800 p-2 relative z-10">
+        
                   <button 
                     onClick={() => handleRemoveFromWatchlist(movie)} 
-                    className="bg-red-600 bg-opacity-40 p-2 rounded-full hover:bg-opacity-70 transition-all"
+                    className="text-white p-2 rounded hover:bg-gray-800 transition-colors"
                     title="Remove from watchlist"
                   >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
+                      <line x1="5" y1="12" x2="19" y2="12"></line>
                     </svg>
                   </button>
 
-                  {/* Mark as watched button */}
-                  <button 
-                    onClick={(e) => openRatingModal(movie.id, e)} 
-                    className="bg-[#2e2d2d] bg-opacity-40 p-2 rounded-full hover:bg-opacity-70 transition-all"
-                    title="Mark as watched"
-                  >
-                    I've watched this
-                  </button>
+                  <div className="flex space-x-1">
+            
+                    <button 
+                      onClick={(e) => openRatingModal(movie.id, e)} 
+                      className="text-white p-2 rounded hover:bg-gray-800 transition-colors"
+                      title="I've Watched This"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                      </svg>
+                    </button>
 
-                  {/* Toggle description button */}
-                  <button 
-                    onClick={() => toggleDescription(movie.id)} 
-                    className="bg-black bg-opacity-40 p-2 rounded-full hover:bg-opacity-70 transition-all"
-                    title="Expand Description"
-                  >
-                    <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-                    </svg>
-                  </button>
+   
+                    <button 
+                      onClick={() => toggleDescription(movie.id)} 
+                      className="text-white p-2 rounded hover:bg-gray-800 transition-colors"
+                      title="Show Description"
+                    >
+                      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </button>
+                  </div>
                 </div>
 
                 {showDescription[movie.id] && movie.overview && (
-                  <div className="mt-4 px-4 py-2 bg-gray-900 bg-opacity-50 rounded-md text-white">
-                    <p>{movie.overview}</p>
+                  <div className="mt-2 px-4 py-3 bg-gray-900 rounded-md text-white">
+                    <p className="text-sm">{movie.overview}</p>
                   </div>
                 )}
               </div>
@@ -253,7 +269,7 @@ const WatchlistPage = () => {
         </div>
       </div>
 
-      {/* Rating Modal - Changed to be a popup instead of a full-screen overlay */}
+      
       {showRatingModal && (
         <div className="fixed z-50" style={{ top: `${modalPosition.top}px`, left: `${modalPosition.left}px` }}>
           <div className="bg-[#1a2238] rounded-lg p-6 shadow-xl border border-purple-700 w-64">

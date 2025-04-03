@@ -9,7 +9,8 @@ import {
 	checkAuth,
 	onboard,
 	addToWatchlist,
-	removeFromWatchlist
+	removeFromWatchlist,
+	markMovieAsWatched, updateProfile
 
 } from "../controllers/authController.js";
 import { verifyToken } from "../middleware/verifyToken.js";
@@ -20,9 +21,11 @@ router.get("/check-auth", verifyToken, checkAuth);
 
 router.post("/signup", signup);
 router.post("/login", login);
+router.post("/mark-watched", verifyToken, markMovieAsWatched);
 router.post("/onboard", verifyToken, onboard);
 router.post("/logout", logout);
 
+router.put("/update-profile", verifyToken, updateProfile);
 router.post("/verify-email", verifyEmail);
 router.post("/forgot-password", forgotPassword);
 

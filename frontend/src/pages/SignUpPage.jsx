@@ -26,7 +26,7 @@ const SignUpPage = () => {
 	};
 	return (
 		<div className="min-h-screen w-full bg-gray-950 flex flex-col">
-			{/* ReelFriend Text (Now Positioned at the Top Left of the Whole Page) */}
+			
 			<Link
 				to="/"
 				className="absolute top-6 left-6 text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-700 text-transparent bg-clip-text hover:opacity-80 transition-opacity"

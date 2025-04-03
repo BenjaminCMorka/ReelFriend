@@ -1,0 +1,10 @@
+{
+    "embedding_dim": 128,
+    "batch_size": 256,
+    "learning_rate": 0.003860236071533239,
+    "dropout_rate": 0.36117190001639143,
+    "l2_reg": 7.523419411638007e-06,
+    "use_bias": true,
+    "use_features": true,
+    "use_time_features": true
+}
