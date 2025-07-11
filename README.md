@@ -16,3 +16,11 @@ Alongside the model, a web-based application called ReelFriend was developed as 
 The results highlight the strengths of the hybrid deep neural model, which achieved the lowest **RMSE** and **MAE** values among all evaluated approaches. This indicates a stronger ability to accurately predict user ratings.
 
 In contrast, traditional collaborative filtering methods, both user-based and item-based, show higher prediction errors, likely due to their limited ability to model complex relationships in the data.
+
+---
+
+## Dataset
+The dataset used for the project can be found here:
+https://grouplens.org/datasets/movielens/latest/
+
+
