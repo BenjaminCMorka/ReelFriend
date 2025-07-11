@@ -17,16 +17,6 @@ Before developing the recommendation model, an in-depth exploratory data analysi
 
 ---
 
-## Data Processing Pipeline
-
-Below is a diagram detailing the data processing pipeline for the neural hybrid recommendation model. It shows the process through which raw data is prepared into features used to train the neural network, enabling accurate movie recommendations
-
-![Data Processing Pipeline](https://github.com/user-attachments/assets/b9bb4738-19f8-4fd9-8077-f06039d3b045)
-
-
----
-
-
 ## Evaluation
 ![Model Evaluation Results](https://github.com/user-attachments/assets/ceb3f993-8337-4f17-83e2-30120b4b0319)
 
