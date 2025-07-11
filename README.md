@@ -28,8 +28,10 @@ Below is a diagram detailing the data processing pipeline for the neural hybrid 
 
 
 ## Evaluation
+![Model Evaluation Results](https://github.com/user-attachments/assets/ceb3f993-8337-4f17-83e2-30120b4b0319)
 
-![ReelFriend Model Evaluation](https://github.com/user-attachments/assets/9e3fcb08-ed1f-4947-87fc-487e33c3bd12)
+
+
 
 The results highlight the strengths of the hybrid deep neural model, which achieved the lowest **RMSE** and **MAE** values among all evaluated approaches. This indicates a stronger ability to accurately predict user ratings.
 
