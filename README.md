@@ -5,7 +5,7 @@ This solo project presents a Neural hybrid deep learning recommendation model th
 The approach was designed to handle common challenges like the cold start problem and data sparsity, which frequently limit real-world systems. 
 
 To make the model’s predictions more transparent, post hoc SHAP-based explanations are integrated to offer users insight into why specific items were recommended.  
-The model is trained and evaluated using the MovieLens ml-latest-small dataset, and results show that it predicts 20% more accurately than several standard baseline models across key metrics!
+The model is trained and evaluated using the MovieLens ml-latest-small dataset, and results show that it predicts 20% more accurately than several standard baseline models across key metrics.
 
 Alongside the model, a web application called ReelFriend was developed to demonstrate how the system can be applied in practice, with a focus on delivering both personalised and understandable recommendations.
 
