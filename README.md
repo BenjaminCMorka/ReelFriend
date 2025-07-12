@@ -38,6 +38,11 @@ In contrast, traditional collaborative filtering methods, both user-based and it
 The dataset used for the project can be found here:  
 [MovieLens latest dataset](https://grouplens.org/datasets/movielens/latest/)
 
+---
+
+## Demo
+A Demo Video of the Web Application can be found here: 
+[ReelFriend Demo Video](https://www.youtube.com/watch?v=Kk1nljuuW1w&t=7s)
 -----------
 ![Python](https://img.shields.io/badge/Python-3670A0?style=for-the-badge&logo=python&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
