@@ -31,6 +31,9 @@ These results show a ~20% accuracy improvement over baseline models! Meaning my 
 
 In contrast, traditional collaborative filtering methods, both user-based and item-based, show higher prediction errors, likely due to their limited ability to model complex relationships in the data.
 
+The baseline models are available at:
+[Surprise baseline models](https://surprise.readthedocs.io/en/stable/prediction_algorithms_package.html)
+
 ---
 
 ## Dataset
