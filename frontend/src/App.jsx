@@ -3,10 +3,8 @@ import FloatingShape from "./components/FloatingShape";
 
 import SignUpPage from "./pages/SignUpPage";
 import LoginPage from "./pages/LoginPage";
-import EmailVerificationPage from "./pages/EmailVerificationPage";
 import DashboardPage from "./pages/DashboardPage";
 import ForgotPasswordPage from "./pages/ForgotPasswordPage";
-import ResetPasswordPage from "./pages/ResetPasswordPage";
 import LandingPage from "./pages/LandingPage";
 import WatchlistPage from "./pages/WatchlistPage";
 import AboutPage from "./pages/AboutPage";
@@ -22,15 +20,12 @@ import OnboardingPage from "./pages/OnboardingPage";
 
 // protect routes which need authentication
 const ProtectedRoute = ({ children }) => {
-	const { isAuthenticated, user } = useAuthStore();
+	const { isAuthenticated } = useAuthStore();
 
 	if (!isAuthenticated) {
 		return <Navigate to='/login' replace />;
 	}
 
-	if (!user.isVerified) {
-		return <Navigate to='/verify-email' replace />;
-	}
 
 	return children;
 };
@@ -70,10 +65,10 @@ const ProtectAuth = ({ children }) => {
 const RedirectAuthenticatedUser = ({ children }) => {
 	const { isAuthenticated, user } = useAuthStore();
 
-	if (isAuthenticated && user.isVerified && !user.hasOnboarded) {
+	if (isAuthenticated && !user.hasOnboarded) {
 		return <Navigate to='/onboard' replace />;
 	}
-	else if (isAuthenticated && user.isVerified && user.hasOnboarded){
+	else if (isAuthenticated && user.hasOnboarded){
 		return <Navigate to='/dashboard' replace />;
 	}
 
@@ -108,9 +103,7 @@ function App() {
 				{/* only when not logged in */}
 				<Route path='/signup' element={<RedirectAuthenticatedUser><SignUpPage /></RedirectAuthenticatedUser>} />
 				<Route path='/login' element={<RedirectAuthenticatedUser><ProtectAuth><LoginPage /> </ProtectAuth></RedirectAuthenticatedUser>} />
-				<Route path='/verify-email' element={<EmailVerificationPage />} />
-				<Route path='/forgot-password' element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />
-				<Route path='/reset-password/:token' element={<RedirectAuthenticatedUser><ResetPasswordPage /></RedirectAuthenticatedUser>} />
+				<Route path='/reset-password' element={<RedirectAuthenticatedUser><ForgotPasswordPage /></RedirectAuthenticatedUser>} />
 
 				{/* only when logged in */}
 				<Route path='/onboard' element={<ProtectedRoute><OnboardingPage /></ProtectedRoute>} />

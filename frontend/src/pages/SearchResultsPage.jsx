@@ -4,6 +4,9 @@ import Navbar from "../components/Navbar";
 import { useAuthStore } from '../store/authStore';
 import { toast } from 'react-hot-toast';
 import RecommendationCard from "../components/RecommendationCard";
+import { VALID_TMDB_IDS } from "../utils/tmdbIds";
+
+
 
 const SearchResultsPage = () => {
   const { query } = useParams();
@@ -82,31 +85,46 @@ const SearchResultsPage = () => {
       setLoading(true);
       setError('');
       setNoResultsMessage('');
-
+  
       if (!query.trim()) {
         setNoResultsMessage("Please Enter Movie Title.");
         setLoading(false);
         return;
       }
-
+  
       const apiKey = '7a0553e66258137e7f70085c7dde6cbc';
-      const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}`;
-
+  
       try {
-        const response = await fetch(url);
-        if (!response.ok) throw new Error('Network response was not ok');
-        const data = await response.json();
-        console.log("API Response Data:", data);
-
-        if (data.results && data.results.length > 0) {
-          setResults(data.results);
-          data.results.forEach(item => {
-            if (item.id) {
-              fetchTrailer(item.id);
-            }
+        // Fetch both search results and genre list concurrently
+        const [searchRes, genreRes] = await Promise.all([
+          fetch(`https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${query}`),
+          fetch(`https://api.themoviedb.org/3/genre/movie/list?api_key=${apiKey}&language=en-US`)
+        ]);
+  
+        const [searchData, genreData] = await Promise.all([
+          searchRes.json(),
+          genreRes.json()
+        ]);
+  
+        const genreMap = {};
+        genreData.genres.forEach(g => {
+          genreMap[g.id] = g.name;
+        });
+  
+        if (searchData.results && searchData.results.length > 0) {
+          // Add genre names to each movie
+          const enrichedResults = searchData.results.map(movie => ({
+            ...movie,
+            genres: movie.genre_ids.map(id => genreMap[id] || "Unknown")
+          }));
+  
+          setResults(enrichedResults);
+  
+          enrichedResults.forEach(item => {
+            if (item.id) fetchTrailer(item.id);
           });
         } else {
-          setResults([]); 
+          setResults([]);
           setNoResultsMessage(`Oops, I couldn't find anything for "${query}".`);
         }
       } catch (err) {
@@ -116,12 +134,15 @@ const SearchResultsPage = () => {
         setLoading(false);
       }
     };
-
+  
     handleSearch();
   }, [query]);
+  
 
   // show movie with trailer first
-  const sortedResults = [...results].sort((a, b) => {
+  const sortedResults = [...results]
+  .filter(movie => VALID_TMDB_IDS.has(String(movie.id))) 
+  .sort((a, b) => {
     const aHasTrailer = trailers[a.id];
     const bHasTrailer = trailers[b.id];
     if (aHasTrailer && !bHasTrailer) return -1; 
@@ -162,14 +183,15 @@ const SearchResultsPage = () => {
               .filter(item => item.poster_path) // only include movies with a poster
               .map((movie) => (
                 <RecommendationCard
-                  key={movie.id}
-                  movie={movie}
-                  explanation={`This movie matched your search for "${query}".`}
-                  trailer={trailers[movie.id]}
-                  isInWatchlist={isInWatchlist}
-                  addToWatchlist={addToWatchlist}
-                  openRatingModal={openRatingModal}
-                />
+  key={movie.id}
+  movie={movie}
+  explanation={`This movie matched your search for "${query}".`}
+  trailer={trailers[movie.id]}
+  isInWatchlist={isInWatchlist}
+  addToWatchlist={addToWatchlist}
+  openRatingModal={openRatingModal}
+/>
+
               ))}
           </div>
         )}

@@ -7,10 +7,10 @@ from tensorflow.keras.layers import BatchNormalization, Add, LeakyReLU, Lambda
 from tensorflow.keras.models import Model
 from tensorflow.keras.optimizers.legacy import Adam
 from tensorflow.keras.regularizers import l2
+from tensorflow.keras.initializers import GlorotUniform
 import os
 import json
 
-# using separate functions for lambda layers so saving/loading the model works fine
 def zeros_like_function(x):
     return tf.zeros_like(x)
 
@@ -27,7 +27,7 @@ def scale_by_0_1(x):
     return scale_by_factor(x, 0.1)
 
 
-# try loading optimal params from file, or just use some defaults
+# try loading optimal params from file, or just use some default params
 try:
     base_dir = os.path.dirname(os.path.abspath(__file__))
     params_path = os.path.join(base_dir, "..", "optimal_model_results", "model_params.json")
@@ -65,7 +65,7 @@ def build_recommender_model(
     use_time_features=True
 ):
     """
-    builds the recommender model using embeddings + some dense layers.
+    builds the recommender model using embeddings and dense layers.
     has optional genre and time features.
     """
     # if values not given, fall back 
@@ -82,11 +82,11 @@ def build_recommender_model(
     user_embedding = Embedding(n_users, embedding_dim, embeddings_regularizer=l2(l2_reg), name='user_embedding')(user_input)
     movie_embedding = Embedding(n_movies, embedding_dim, embeddings_regularizer=l2(l2_reg), name='movie_embedding')(movie_input)
     
-    # flatten the embedding layers s
+    # flatten the embedding layers
     user_flatten = Flatten()(user_embedding)
     movie_flatten = Flatten()(movie_embedding)
     
-    # bias terms for users and movies (optional)
+    # bias terms for users and movies 
     if use_bias:
         user_bias = Embedding(n_users, 1, embeddings_initializer='zeros',
                               embeddings_regularizer=l2(l2_reg), name='user_bias')(user_input)
@@ -114,13 +114,13 @@ def build_recommender_model(
         
         # add time input if that flag is set
         if use_time_features:
-            time_input = Input(shape=(5,), name='time_input')  # like day, hour, etc.
+            time_input = Input(shape=(5,), name='time_input')  
             all_inputs.append(time_input)
-            time_dense = Dense(16, activation='relu')(time_input)
+            time_dense = Dense(16, activation='relu', kernel_initializer=GlorotUniform(seed=42))(time_input)
             time_features = BatchNormalization()(time_dense)
         
       
-        genre_dense = Dense(32, activation='relu', kernel_regularizer=l2(l2_reg))(genre_input)
+        genre_dense = Dense(32, activation='relu', kernel_regularizer=l2(l2_reg), kernel_initializer=GlorotUniform(seed=42))(genre_input)
         genre_bn = BatchNormalization()(genre_dense)
         
         # multiply user and movie vectors 
@@ -141,50 +141,50 @@ def build_recommender_model(
             ])
         
         # first dense block
-        dense1 = Dense(256, kernel_regularizer=l2(l2_reg))(feature_vector)
+        dense1 = Dense(256, kernel_regularizer=l2(l2_reg), kernel_initializer=GlorotUniform(seed=42))(feature_vector)
         bn1 = BatchNormalization()(dense1)
         act1 = LeakyReLU(alpha=0.1)(bn1)
-        drop1 = Dropout(dropout_rate)(act1)
+        drop1 = Dropout(dropout_rate, seed=42)(act1)
         
         # second dense block with residual connection
-        dense2 = Dense(128, kernel_regularizer=l2(l2_reg))(drop1)
+        dense2 = Dense(128, kernel_regularizer=l2(l2_reg), kernel_initializer=GlorotUniform(seed=42))(drop1)
         bn2 = BatchNormalization()(dense2)
         act2 = LeakyReLU(alpha=0.1)(bn2)
-        drop2 = Dropout(dropout_rate)(act2)
+        drop2 = Dropout(dropout_rate,seed=42)(act2)
         
-        # make projection so can add it to previous block (residual)
+        # make projection so can add it to previous block 
         projection = Dense(128)(drop1)
         resid1 = Add()([drop2, projection])
         
         
-        dense3 = Dense(64, kernel_regularizer=l2(l2_reg))(resid1)
+        dense3 = Dense(64, kernel_regularizer=l2(l2_reg), kernel_initializer=GlorotUniform(seed=42))(resid1)
         bn3 = BatchNormalization()(dense3)
         act3 = LeakyReLU(alpha=0.1)(bn3)
         drop3 = Dropout(dropout_rate)(act3)
         
         # final prediction
         if use_bias:
-            output_pre = Dense(1, activation='sigmoid', name='prediction_pre')(drop3)
+            output_pre = Dense(1, activation='sigmoid', name='prediction_pre', kernel_initializer=GlorotUniform(seed=42))(drop3)
             biases = Add()([user_bias, movie_bias, global_bias])
             scaled_biases = Lambda(scale_by_0_1, output_shape=scale_by_factor_output_shape, name='scaled_biases')(biases)
             output = Add(name='prediction')([output_pre, scaled_biases])
         else:
-            output = Dense(1, activation='sigmoid', name='prediction')(drop3)
+            output = Dense(1, activation='sigmoid', name='prediction', kernel_initializer=GlorotUniform(seed=42))(drop3)
         
         model = Model(inputs=all_inputs, outputs=output)
     
     else:
-        # no features just going with pure matrix fac
+        # no features just going with pure matrix factorization
         dot_product = Multiply()([user_flatten, movie_flatten])
-        dense = Dense(32, activation='relu')(dot_product)
+        dense = Dense(32, activation='relu', kernel_initializer=GlorotUniform(seed=42))(dot_product)
         
         if use_bias:
-            output_pre = Dense(1, activation='sigmoid', name='prediction_pre')(dense)
+            output_pre = Dense(1, activation='sigmoid', name='prediction_pre', kernel_initializer=GlorotUniform(seed=42))(dense)
             biases = Add()([user_bias, movie_bias, global_bias])
             scaled_biases = Lambda(scale_by_0_1, output_shape=scale_by_factor_output_shape, name='scaled_biases')(biases)
             output = Add(name='prediction')([output_pre, scaled_biases])
         else:
-            output = Dense(1, activation='sigmoid', name='prediction')(dense)
+            output = Dense(1, activation='sigmoid', name='prediction', kernel_initializer=GlorotUniform(seed=42))(dense)
         
         model = Model(inputs=[user_input, movie_input], outputs=output)
     

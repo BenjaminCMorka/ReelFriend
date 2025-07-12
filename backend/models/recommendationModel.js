@@ -24,8 +24,6 @@ const recommendationSchema = new mongoose.Schema({
   }
 });
 
-// remove unique index on user
-// add TTL index on expiresAt
 recommendationSchema.index({ expiresAt: 1 }, { expireAfterSeconds: 0 });
 
 export const Recommendation = mongoose.model('Recommendation', recommendationSchema);

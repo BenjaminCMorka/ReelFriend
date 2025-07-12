@@ -1,50 +1,38 @@
-// Add Jest extended matchers
 import '@testing-library/jest-dom';
+import { TextEncoder, TextDecoder } from 'util';
+global.TextEncoder = TextEncoder;
+global.TextDecoder = TextDecoder;
 
-// Mock the framer-motion library
-jest.mock('framer-motion', () => {
-  const actual = jest.requireActual('framer-motion');
-  return {
-    ...actual,
-    motion: {
-      div: ({ children, ...props }) => <div {...props}>{children}</div>,
-      a: ({ children, ...props }) => <a {...props}>{children}</a>,
-      button: ({ children, ...props }) => <button {...props}>{children}</button>,
-    },
-    AnimatePresence: ({ children }) => <>{children}</>,
-  };
-});
 
-// Mock react-hot-toast
-jest.mock('react-hot-toast', () => ({
-  toast: {
-    success: jest.fn(),
-    error: jest.fn(),
-  },
+Object.defineProperty(window, 'scrollY', { value: 0, writable: true });
+Object.defineProperty(window, 'scrollX', { value: 0, writable: true });
+
+
+Element.prototype.getBoundingClientRect = jest.fn(() => ({
+  width: 0,
+  height: 0,
+  top: 0,
+  left: 0,
+  bottom: 0,
+  right: 0,
 }));
 
-// Mock localStorage
-const localStorageMock = {
-  getItem: jest.fn(),
-  setItem: jest.fn(),
-  removeItem: jest.fn(),
-  clear: jest.fn(),
+
+window.fs = {
+  readFile: jest.fn().mockResolvedValue(new Uint8Array())
 };
 
-global.localStorage = localStorageMock;
 
-// Mock Intersection Observer
-global.IntersectionObserver = class IntersectionObserver {
-  constructor() {}
-  observe() { return null; }
-  unobserve() { return null; }
-  disconnect() { return null; }
+const originalConsoleError = console.error;
+console.error = (...args) => {
+
+  if (
+    typeof args[0] === 'string' && 
+    (args[0].includes('Error fetching dashboard recommendations') ||
+     args[0].includes('Error fetching trailer') ||
+     args[0].includes('Full error in rating submission'))
+  ) {
+    return;
+  }
+  originalConsoleError(...args);
 };
-
-// Create mock for fetch
-global.fetch = jest.fn(() => 
-  Promise.resolve({
-    ok: true,
-    json: () => Promise.resolve({}),
-  })
-);

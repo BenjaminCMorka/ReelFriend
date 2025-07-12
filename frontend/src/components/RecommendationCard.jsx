@@ -51,10 +51,11 @@ const RecommendationCard = ({
   const releaseYear = movie.release_date ? movie.release_date.split('-')[0] : 'Unknown';
   let genres = "";
   if (Array.isArray(movie.genres)) {
-    genres = movie.genres.map(genre => genre.name).join(', ');
+    genres = movie.genres.join(', ');
   } else {
-    genres = movie.genres || 'Unknown';
+    genres = 'Unknown';
   }
+  
 
   return (
     <div className="movie-container flex flex-col">
@@ -157,9 +158,6 @@ const RecommendationCard = ({
       {showExplanation && explanation && (
         <div className="mt-2 px-4 py-3 bg-blue-900/40 rounded-md text-white">
           <div className="flex items-start">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 text-yellow-500 mt-0.5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-            </svg>
             <p className="text-sm flex-1">{explanation}</p>
           </div>
         </div>

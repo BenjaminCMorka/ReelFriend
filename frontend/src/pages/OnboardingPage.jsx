@@ -1,168 +1,197 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../store/authStore";
-import { useNavigate } from 'react-router-dom';
-
-import { Card, CardContent } from '../components/Card';
-import SearchInput from '../components/SearchInput';
+import { useNavigate } from "react-router-dom";
+import { VALID_TMDB_IDS } from "../utils/tmdbIds";
 
 const OnboardingPage = () => {
-    const { user, updateOnboarding, logout } = useAuthStore();
-    const [favMovies, setFavMovies] = useState([]);
-    const [results, setResults] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState('');
-    const [searchTerm, setSearchTerm] = useState('');
-    const [noResultsMessage, setNoResultsMessage] = useState('');
-    const navigate = useNavigate();
+	const { user, updateOnboarding, logout } = useAuthStore();
+	const [favMovies, setFavMovies] = useState([]);
+	const [searchTerm, setSearchTerm] = useState("");
+	const [results, setResults] = useState([]);
+	const [error, setError] = useState("");
+	const [loading, setLoading] = useState(false);
+	const navigate = useNavigate();
 
-    const question = 'Tell me some movies you loved watching!';
+	useEffect(() => {
+		if (user?.hasOnboarded) navigate("/dashboard");
+	}, [user, navigate]);
 
-    useEffect(() => {
-        if (user && user.hasOnboarded) {
-            navigate('/dashboard');
-        }
-    }, [user, navigate]);
+	const handleSearch = async () => {
+		if (!searchTerm.trim()) return;
 
-    const handleSearch = async () => {
-        setLoading(true);
-        setError('');
-        setNoResultsMessage('');
-        setResults([]);
+		setLoading(true);
+		setError("");
+		setResults([]);
 
-        if (!searchTerm.trim()) {
-            setNoResultsMessage("Please enter a movie title.");
-            setLoading(false);
-            return;
-        }
+		const apiKey = "7a0553e66258137e7f70085c7dde6cbc";
+		const url = `https://api.themoviedb.org/3/search/movie?api_key=${apiKey}&query=${searchTerm}`;
 
-        const apiKey = '7a0553e66258137e7f70085c7dde6cbc';
-        const url = `https://api.themoviedb.org/3/search/multi?api_key=${apiKey}&query=${searchTerm}`;
+		try {
+			const response = await fetch(url);
+			const data = await response.json();
+			setResults(data.results || []);
+		} catch (err) {
+			console.error("Search error:", err);
+			setError("Could not fetch movies. Please try again.");
+		} finally {
+			setLoading(false);
+		}
+	};
 
-        try {
-            const response = await fetch(url);
-            if (!response.ok) throw new Error('Network response was not ok');
-            const data = await response.json();
+	const handleSubmit = async () => {
+		try {
+            const movieIds = favMovies.map(movie => movie.id.toString());
+			await updateOnboarding(movieIds);
+			navigate("/dashboard");
+		} catch (err) {
+			console.error("Submit error:", err);
+			setError("Failed to save preferences.");
+		}
+	};
 
-            if (data.results && data.results.length > 0) {
-                setResults(data.results);
-            } else {
-                setNoResultsMessage(`No results found for "${searchTerm}".`);
-            }
-        } catch (err) {
-            console.error('Error fetching movies:', err);
-            setError('Failed to fetch movies. Please try again later.');
-        } finally {
-            setLoading(false);
-        }
-    };
+	const handleLogout = () => logout();
 
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSearch();
-        }
-    };
+	return (
+		<div className="min-h-screen text-white px-4 py-6">
 
-    const handleSubmit = async () => {
-        try {
-            await updateOnboarding([], favMovies, []);
-            navigate('/dashboard');
-        } catch (err) {
-            console.error("Error updating onboarding data", err);
-            setError("Failed to save your preferences. Please try again.");
-        }
-    };
+			<div className="absolute top-4 left-6 text-3xl font-bold bg-gradient-to-r from-blue-400 to-purple-700 text-transparent bg-clip-text select-none">
+				ReelFriend
+			</div>
 
-    const handleLogout = () => {
-        logout();
-    };
+			<div className="absolute top-4 right-6">
+				<button
+					onClick={handleLogout}
+					className="text-sm px-5 py-2.5 rounded-md font-medium bg-neutral-800 hover:bg-neutral-700 transition"
+				>
+					Logout
+				</button>
+			</div>
 
-    return (
-        <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.9 }}
-            transition={{ duration: 0.5 }}
-            className="max-w-md w-full mx-auto mt-10 p-8 bg-gray-900 bg-opacity-80 rounded-xl shadow-2xl text-center relative"
-        >
-            <button
-                className="absolute top-4 right-4 text-white bg-red-600 rounded px-4 py-2"
-                onClick={handleLogout}
-            >
-                Logout
-            </button>
+	
+			<motion.div
+				initial={{ opacity: 0, y: 30 }}
+				animate={{ opacity: 1, y: 0 }}
+				transition={{ duration: 0.4 }}
+				className="w-full max-w-4xl mx-auto bg-gray-900 rounded-xl border border-neutral-800 shadow-md mt-50 p-15"
+			>
+				<h1 className="text-2xl font-semibold mb-4 text-center">
+					What movies have you loved?
+				</h1>
+				<p className="text-sm text-white text-center mb-6">
+					Search and add at least 3 favorites to help me personalize your recommendations.
+				</p>
 
-            <div className="text-white">
-                <h2 className="text-xl font-bold">Let me get to know you better...</h2>
-                <p className="text-lg mt-2">{question}</p>
+				{/* Search */}
+				<div className="flex gap-2 mb-6">
+                    <input
+                        type="text"
+                        placeholder="Search for a movie..."
+                        value={searchTerm}
+                        onChange={(e) => {
+                            const value = e.target.value;
+                            setSearchTerm(value);
 
-                <Card className="card mt-4">
-                    <CardContent className="card-content">
-                        <SearchInput
-                            type="text"
-                            placeholder="Search for Movies or Series..."
-                            className="input"
-                            value={searchTerm}
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                            onKeyDown={handleKeyDown}
-                        />
-                    </CardContent>
-                </Card>
+                            if (value.trim() === "") {
+                                setResults([]);
+                                setError("");
+                            }
+                        }}
+                        onKeyDown={(e) => e.key === "Enter" && handleSearch()}
+                        className="w-full px-4 py-2 rounded bg-gray-900 border border-neutral-800 text-sm focus:outline-none focus:ring-1 focus:ring-neutral-700"
+                    />
 
-                {loading && <p>Loading...</p>}
-                {error && <p className="text-red-500">{error}</p>}
-                {noResultsMessage && <p className="text-yellow-500">{noResultsMessage}</p>}
+					<button
+						onClick={handleSearch}
+						className="px-4 py-2 text-sm rounded border bg-blue-900 border-neutral-700 hover:bg-purple-900 transition"
+					>
+						Search
+					</button>
+				</div>
 
-                <div className="selected-movies my-4">
-                    {favMovies.map((movie, index) => (
-                        <div key={index} className="selected-movie-box flex justify-between items-center bg-gray-800 p-2 rounded my-2">
-                            <span>{movie.title || movie.name}</span>
-                            <button
-                                onClick={() => setFavMovies((prev) => prev.filter((_, i) => i !== index))}
-                                className="text-red-500 text-sm"
+
+				{favMovies.length > 0 && (
+					<div className="mb-6">
+						<h3 className="text-sm mb-2 text-neutral-400">Selected Movies:</h3>
+						<ul className="space-y-2">
+							{favMovies.map((movie, idx) => (
+								<li
+                                key={idx}
+                                className="flex justify-between items-center bg-gray-800 px-4 py-2 rounded"
                             >
-                                ✖
-                            </button>
-                        </div>
-                    ))}
-                </div>
-
-                <div className="movie-cards grid grid-cols-2 gap-4 my-4">
-                    {results
-                        .filter(item => item.poster_path)
-                        .map((item) => (
-                            <div key={item.id} className="movie-card bg-gray-800 p-2 rounded">
-                                <img
-                                    src={`https://image.tmdb.org/t/p/w200${item.poster_path}`}
-                                    alt={item.title || item.name}
-                                    className="movie-image rounded mb-2"
-                                />
-                                <h3 className="text-sm font-semibold text-white">{item.title || item.name}</h3>
+                                <span className="text-sm">
+                                    {movie.title}{" "}
+                                    <span className="text-neutral-400">
+                                        ({movie.release_date ? new Date(movie.release_date).getFullYear() : "N/A"})
+                                    </span>
+                                </span>
                                 <button
-                                    className="mt-2 text-sm text-blue-400 hover:underline"
-                                    onClick={() => {
-                                        setFavMovies((prev) => [...prev, item]);
-                                        setSearchTerm('');
-                                        setResults([]);
-                                    }}
+                                    onClick={() =>
+                                        setFavMovies((prev) => prev.filter((_, i) => i !== idx))
+                                    }
+                                    className="text-red-400 hover:text-red-900 text-xs"
                                 >
-                                    Select
+                                    Remove
                                 </button>
-                            </div>
-                        ))}
-                </div>
+                            </li>
+                            
+							))}
+						</ul>
+					</div>
+				)}
 
-                <button
-                    className="mt-6 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-                    onClick={handleSubmit}
-                    disabled={favMovies.length < 3}
-                >
-                    Finish
-                </button>
-            </div>
-        </motion.div>
-    );
+			
+				{loading && <p className="text-sm text-neutral-500">Searching...</p>}
+				{error && <p className="text-sm text-red-500">{error}</p>}
+
+				{results.length > 0 && (
+					<div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+						{results
+  .filter(r => r.poster_path && VALID_TMDB_IDS.has(String(r.id)))
+  .map((movie) => (
+								<div
+	key={movie.id}
+	className="border border-gray-700 rounded-lg p-2 text-center hover:bg-gray-700 transition"
+>
+	<img
+		src={`https://image.tmdb.org/t/p/w200${movie.poster_path}`}
+		alt={movie.title}
+		className="rounded mb-2"
+	/>
+	<p className="text-xs mb-2">
+		{movie.title}{" "}
+		<span className="text-neutral-400">
+			({movie.release_date ? new Date(movie.release_date).getFullYear() : "N/A"})
+		</span>
+	</p>
+	<button
+		onClick={() => {
+			setFavMovies((prev) => [...prev, movie]);
+			setSearchTerm("");
+			setResults([]);
+		}}
+		className="w-7 h-7 flex items-center justify-center rounded-full bg-green-600 text-white hover:bg-green-700 transition mx-auto"
+		aria-label="Add movie"
+	>
+		+
+	</button>
+</div>
+
+
+							))}
+					</div>
+				)}
+
+				<button
+					onClick={handleSubmit}
+					disabled={favMovies.length < 3}
+					className="w-full py-3 text-sm font-medium rounded bg-gradient-to-r from-blue-400 to-purple-700 text-white shadow hover:opacity-90 transition disabled:opacity-50"
+				>
+					Finish Onboarding
+				</button>
+			</motion.div>
+		</div>
+	);
 };
 
 export default OnboardingPage;

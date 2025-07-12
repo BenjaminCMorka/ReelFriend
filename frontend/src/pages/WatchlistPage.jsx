@@ -147,17 +147,6 @@ const WatchlistPage = () => {
         <h1 className="text-3xl font-bold mb-6 pt-4">Your Watchlist</h1>
         <hr className="border-t border-gray-800 mb-6" />
 
-        {loading && (
-          <div className="text-center py-8">
-            <div className="animate-pulse flex flex-col items-center">
-              <div className="h-8 w-64 bg-gray-700 rounded mb-4"></div>
-              <div className="h-4 w-48 bg-gray-700 rounded"></div>
-            </div>
-            <p className="mt-4">Loading your watchlist...</p>
-          </div>
-        )}
-
-        {error && <p className="text-red-500 p-4 bg-red-900/50 border border-red-700 rounded">{error}</p>}
         
         {!loading && watchlistMovies.length === 0 && (
           <div className="text-center py-12">
@@ -221,16 +210,17 @@ const WatchlistPage = () => {
                 
                 <div className="flex justify-between items-center bg-gray-900 border-t border-gray-800 p-2 relative z-10">
         
-                  <button 
+                <button 
                     onClick={() => handleRemoveFromWatchlist(movie)} 
                     className="text-white p-2 rounded hover:bg-gray-800 transition-colors"
                     title="Remove from watchlist"
-                  >
+                >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path>
-                      <line x1="5" y1="12" x2="19" y2="12"></line>
+                      <line x1="18" y1="6" x2="6" y2="18" />
+                      <line x1="6" y1="6" x2="18" y2="18" />
                     </svg>
-                  </button>
+                </button>
+
 
                   <div className="flex space-x-1">
             

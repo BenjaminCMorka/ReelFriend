@@ -1,5 +1,5 @@
 """
-visualization for model evaluation and analysis.
+visualization functions for model evaluation and analysis.
 """
 import matplotlib.pyplot as plt
 import numpy as np

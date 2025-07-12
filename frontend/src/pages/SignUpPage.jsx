@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Input from "../components/Input";
 import { Loader, Lock, Mail, User } from "lucide-react";
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 import { useAuthStore } from "../store/authStore";
 
@@ -10,7 +10,6 @@ const SignUpPage = () => {
 	const [name, setName] = useState("");
 	const [email, setEmail] = useState("");
 	const [password, setPassword] = useState("");
-	const navigate = useNavigate();
 
 	const { signup, error, isLoading } = useAuthStore();
 
@@ -19,7 +18,6 @@ const SignUpPage = () => {
 
 		try {
 			await signup(email, password, name);
-			navigate("/verify-email");
 		} catch (error) {
 			console.log(error);
 		}

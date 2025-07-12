@@ -18,7 +18,7 @@ def print_recommendation_explanation(recommender, user_id, recommendations):
 
 def _explain_recommendations_for_new_user(recommender, user_id, recommendations):
     """
-    explanation logic for new users - based on fav genres + similarities
+    explanation logic for new users based on fav genres and similarities
     """
     favorite_movie_ids = []
     
@@ -44,9 +44,8 @@ def _explain_recommendations_for_new_user(recommender, user_id, recommendations)
             if movie_row[genre].values[0] == 1:
                 favorite_genres[genre] = favorite_genres.get(genre, 0) + 1
     
-    # get top 3 genres they seem to like
+    # get top genres they like
     favorite_genres = sorted(favorite_genres.items(), key=lambda x: x[1], reverse=True)
-    top_genres = [genre for genre, count in favorite_genres[:3]]
     
     explanations = []
     print("\nRecommendations with natural language explanations:")
@@ -132,7 +131,7 @@ def _explain_recommendations_for_existing_user(recommender, user_id, recommendat
     
     watched_movies = set(user_ratings["movieId"].unique())
     
-    print("\nRecommendations with natural language explanations:")
+    print("\nRecommendations with explanations:")
     
     for title, pred_rating, genres_str in recommendations:
         rec_row = recommender.movies_df[recommender.movies_df["title"] == title]

@@ -17,9 +17,9 @@ def prepare_train_val_test_split(ratings_df, movies_df, n_genres, genre_names,
         ratings_df: the full ratings dataframe
         movies_df: movie metadata
         n_genres: total number of genres
-        genre_names: list of all genre column names
-        rating_min: minimum rating value in the dataset
-        rating_max: maximum rating value in the dataset
+        genre_names: list of all genre names
+        rating_min: minimum rating in the dataset
+        rating_max: maximum rating in the dataset
         val_size: fraction for validation set
         test_size: fraction for test set
         stratify_recent: whether to balance recent/older ratings across splits
@@ -30,7 +30,7 @@ def prepare_train_val_test_split(ratings_df, movies_df, n_genres, genre_names,
     
     print("Preparing train/validation/test splits...")
 
-    # basic inputs so user + movie indices
+    # user and movie indices
     X = ratings_df[['user_idx', 'movie_idx']].values
 
     # get raw popularity and rating stats

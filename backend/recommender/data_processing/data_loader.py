@@ -23,7 +23,7 @@ def load_movielens_data(data_path):
     movies_path = os.path.join(data_path, 'movies.csv')
     movies_df = pd.read_csv(movies_path)
     
-    # try to pull the year out of the movie titles
+    # pull the year out of the movie titles
     movies_df['year'] = movies_df['title'].str.extract(r'\((\d{4})\)$', expand=False)
     movies_df['year'] = pd.to_numeric(movies_df['year'], errors='coerce')
     

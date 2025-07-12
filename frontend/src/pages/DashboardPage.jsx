@@ -1,3 +1,5 @@
+
+
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import Navbar from "../components/Navbar";
@@ -104,11 +106,11 @@ const DashboardPage = () => {
       const apiKey = "7a0553e66258137e7f70085c7dde6cbc";
       const movieDetailsArray = [];
       
-      // Get user's watchlist to filter recommendations
+     
       const userWatchlist = user && user.watchlist ? user.watchlist : [];
       const watchedMovies = user && user.watchedMovies ? user.watchedMovies.map(movie => movie.movieId) : [];
 
-      // Filter out movies already in watchlist or watched
+      
       const filteredMovieIds = movieIds.filter(id => {
         return !userWatchlist.includes(id.toString()) && !watchedMovies.includes(id.toString());
       });

@@ -133,15 +133,13 @@ def efficient_hyperparameter_tuning(data_path, Recommender, n_trials=20):
         from optuna.visualization import plot_optimization_history, plot_param_importances
         import matplotlib.pyplot as plt
         
-        # plot optimization history
         fig = plot_optimization_history(study)
         fig.write_image("optimization_history.png")
         
-        # plot parameter importances
         fig = plot_param_importances(study)
         fig.write_image("parameter_importances.png")
     except:
-        print("Couldn't generate visualizations - ensure plotly is installed")
+        print("couldnt generate visualisations")
     
     trials_df = study.trials_dataframe()
     trials_df.to_csv("optuna_hyperparameter_results.csv", index=False)

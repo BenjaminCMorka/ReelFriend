@@ -3,8 +3,6 @@ import {
 	login,
 	logout,
 	signup,
-	verifyEmail,
-	forgotPassword,
 	resetPassword,
 	checkAuth,
 	onboard,
@@ -26,10 +24,7 @@ router.post("/onboard", verifyToken, onboard);
 router.post("/logout", logout);
 
 router.put("/update-profile", verifyToken, updateProfile);
-router.post("/verify-email", verifyEmail);
-router.post("/forgot-password", forgotPassword);
-
-router.post("/reset-password/:token", resetPassword);
+router.post("/reset-password", resetPassword);
 router.post("/watchlist/add", verifyToken, addToWatchlist);
 router.post("/watchlist/remove", verifyToken, removeFromWatchlist);
 

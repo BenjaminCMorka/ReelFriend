@@ -23,9 +23,9 @@ async function executeRecommendationScript(userId, favoriteMovies, mode = 'load'
   
   let command = `cd ${path.dirname(scriptPath)} && python3 ${scriptPath} --data-path "data" --mode ${mode} --favorite-movies "${favoriteMoviesStr}" --user-id ${userId}`;
   
-  // Add new ratings parameter if provided
+
   if (newRatings && mode === 'update_embedding') {
-      // Escape quotes in JSON string to prevent command line issues
+     
       const escapedRatings = newRatings.replace(/"/g, '\\"');
       command += ` --new-ratings "${escapedRatings}"`;
   }
@@ -145,23 +145,22 @@ export const getRecommendations = async (req, res) => {
           expiresAt: { $gt: new Date() }
       });
 
-      // Enhanced decision logic
-      const MIN_RATED_MOVIES = 5;
+      const MIN_RATED_MOVIES = 1;
       let shouldRetrain = false;
       let shouldUpdateEmbedding = false;
       
-      // If this is a new user who hasn't been trained yet
+      // if this is a new user who hasn't been trained yet
       if (!user.modelTrainingStatus?.lastTrainedAt) {
-          // New user needs full training once they've rated enough movies
+          // new user needs full training once they've rated enough movies
           shouldRetrain = user.watchedMovies.filter(movie => movie.rating > 0).length >= MIN_RATED_MOVIES;
           console.log(`New user detection: Rated movies count = ${user.watchedMovies.filter(movie => movie.rating > 0).length}, Should retrain = ${shouldRetrain}`);
       } else if (user.modelTrainingStatus?.embeddingsUpdated === false) {
-          // Existing user with the embeddingsUpdated flag set to false
+          // existing user with the embeddingsUpdated flag set to false
           shouldUpdateEmbedding = true;
           console.log(`User ${userId} has new ratings, will update embeddings`);
       }
       
-      // If cached recommendations exist and no updates needed, return cached
+      // if cached recommendations exist and no updates needed, return cached
       if (existingRecommendation && !shouldRetrain && !shouldUpdateEmbedding) {
           return res.json({
               recommendations: existingRecommendation.movieIds,
@@ -170,11 +169,11 @@ export const getRecommendations = async (req, res) => {
           });
       }
 
-      // Generate recommendations, potentially retraining or updating embeddings
+      // generate recommendations
       const mode = shouldRetrain ? 'train' : (shouldUpdateEmbedding ? 'update_embedding' : 'load');
       const recommendationResult = await executeRecommendationScript(userId, favoriteMovies, mode);
 
-      // Upsert recommendations
+
       await Recommendation.findOneAndUpdate(
           { user: userId }, 
           {
@@ -191,7 +190,7 @@ export const getRecommendations = async (req, res) => {
           }
       );
 
-      // Update model training status
+      // update model training status
       if (!user.modelTrainingStatus) {
           user.modelTrainingStatus = {};
       }
@@ -201,7 +200,6 @@ export const getRecommendations = async (req, res) => {
           user.modelTrainingStatus.ratedMoviesCount = user.watchedMovies.filter(movie => movie.rating > 0).length;
           user.modelTrainingStatus.embeddingsUpdated = true;
       } else if (shouldUpdateEmbedding) {
-          // Mark embeddings as updated
           user.modelTrainingStatus.embeddingsUpdated = true;
       }
       

@@ -4,7 +4,6 @@ from datetime import datetime
 import os
 
 class NumpyEncoder(json.JSONEncoder):
-    """Custom JSON encoder for NumPy types"""
     def default(self, obj):
         if isinstance(obj, (np.integer, np.int64, np.int32)):
             return int(obj)
@@ -23,19 +22,19 @@ def save_experiment_results(model_info, metrics, filepath="experiment_results.js
         metrics: Dictionary containing evaluation metrics
         filepath: Path to save the results
     """
-    # Create the results dictionary
+    # create  results dictionary
     results = {
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
         "configuration": model_info,
         "metrics": metrics
     }
     
-    # Only create directory if filepath contains a directory path
+    # only create directory if filepath contains a directory path
     directory = os.path.dirname(filepath)
     if directory:  # Check if directory is not empty
         os.makedirs(directory, exist_ok=True)
     
-    # If the file exists, load existing results and append
+    # if the file exists, load existing results and append
     existing_results = []
     if os.path.exists(filepath):
         with open(filepath, 'r') as f:
@@ -46,10 +45,10 @@ def save_experiment_results(model_info, metrics, filepath="experiment_results.js
             except json.JSONDecodeError:
                 existing_results = []
     
-    # Append new results
+    # append new results
     existing_results.append(results)
     
-    # Save the updated results
+    # save the updated results
     with open(filepath, 'w') as f:
         json.dump(existing_results, f, indent=2, cls=NumpyEncoder)
     

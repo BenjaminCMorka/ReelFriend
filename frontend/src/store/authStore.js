@@ -17,7 +17,7 @@ export const useAuthStore = create((set) => ({
 	recommendations: [],
 
 
-    markMovieAsWatched: async (movieId, rating) => {
+	markMovieAsWatched: async (movieId, rating) => {
 		set({ isLoading: true, error: null });
 		
 		try {
@@ -27,7 +27,6 @@ export const useAuthStore = create((set) => ({
 				movieId: String(movieId), 
 				rating 
 			}, {
-		
 				validateStatus: function (status) {
 					return status >= 200 && status < 300; 
 				}
@@ -44,7 +43,6 @@ export const useAuthStore = create((set) => ({
 				
 				return response.data;
 			} else {
-				
 				const errorMessage = response.data.message || "Failed to mark movie as watched";
 				set({ 
 					error: errorMessage, 
@@ -68,29 +66,25 @@ export const useAuthStore = create((set) => ({
 				isLoading: false 
 			});
 			
-			throw error;
+			throw new Error(errorMessage);
 		}
 	},
 
-	// Fix the updateOnboarding function
-	updateOnboarding: async (favoriteGenres, favoriteMovies, streamingServices) => {
+	updateOnboarding: async (favoriteMovies) => {
 		set({ isLoading: true, error: null });
 		try {
-			const response = await axios.post(`${API_URL}/onboard`, { favoriteGenres, favoriteMovies, streamingServices });
+			const response = await axios.post(`${API_URL}/onboard`, { favoriteMovies });
 			set({
 				isAuthenticated: true,
-		
 				user: response.data.user,
 				error: null,
 				isLoading: false,
-
 			});
 		} catch (error) {
 			set({ error: error.response?.data?.message || "Error logging in", isLoading: false });
 			throw error;
 		}
-	},
-
+	}, 
 	addToWatchlist: async (movieId, movieTitle, posterPath) => {
 		set({ isLoading: true, error: null });
 		
@@ -194,17 +188,6 @@ export const useAuthStore = create((set) => ({
 			throw error;
 		}
 	},
-	verifyEmail: async (code) => {
-		set({ isLoading: true, error: null });
-		try {
-			const response = await axios.post(`${API_URL}/verify-email`, { code });
-			set({ user: response.data.user, isAuthenticated: true, isLoading: false });
-			return response.data;
-		} catch (error) {
-			set({ error: error.response.data.message || "Error verifying email", isLoading: false });
-			throw error;
-		}
-	},
 	checkAuth: async () => {
 		set({ isCheckingAuth: true, error: null });
 		try {
@@ -215,30 +198,24 @@ export const useAuthStore = create((set) => ({
             console.log(error);
 		}
 	},
-	forgotPassword: async (email) => {
-		set({ isLoading: true, error: null });
+	resetPassword: async (email, newPassword) => {
+		set({ isLoading: true, error: null, message: null });
 		try {
-			const response = await axios.post(`${API_URL}/forgot-password`, { email });
-			set({ message: response.data.message, isLoading: false });
+			const response = await axios.post(`${API_URL}/reset-password`, { email, newPassword });
+			set({
+				message: response.data.message || "Password reset successfully",
+				isLoading: false,
+				error: null,
+			});
+			return response.data;
 		} catch (error) {
 			set({
+				error: error.response?.data?.message || "Error resetting password",
 				isLoading: false,
-				error: error.response.data.message || "Error sending reset password email",
 			});
 			throw error;
 		}
 	},
-	resetPassword: async (token, password) => {
-		set({ isLoading: true, error: null });
-		try {
-			const response = await axios.post(`${API_URL}/reset-password/${token}`, { password });
-			set({ message: response.data.message, isLoading: false });
-		} catch (error) {
-			set({
-				isLoading: false,
-				error: error.response.data.message || "Error resetting password",
-			});
-			throw error;
-		}
-	},
+	
+	
 }));

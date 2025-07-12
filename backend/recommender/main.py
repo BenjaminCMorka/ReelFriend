@@ -17,7 +17,27 @@ from utils.id_mapping import map_tmdb_to_movielens, map_movielens_to_tmdb
 from utils.utils import save_experiment_results
 from explanation.shap_explanations import print_recommendation_explanation
 
+import os
+os.environ["PYTHONHASHSEED"] = "42"
+os.environ["TF_DETERMINISTIC_OPS"] = "1"
 
+# fallback recommendations based on input movies' genres
+def get_genre_specific_recommendations(recommender, favorite_movies):
+    genres = set()
+    for movie_id in favorite_movies:
+        movie_row = recommender.movies_df[recommender.movies_df["movieId"] == int(movie_id)]
+        if not movie_row.empty:
+            genres.update([g for g in recommender.genre_names if movie_row[g].values[0] == 1])
+    
+    # filter movies by these genres and sort by rating count
+    genre_movies = recommender.movies_df[
+        recommender.movies_df[list(genres)].sum(axis=1) > 0
+    ].sort_values('movie_rating_count', ascending=False).head(24)
+    
+    return [
+        (row['title'], 0, "|".join([g for g in recommender.genre_names if row[g] == 1])) 
+        for _, row in genre_movies.iterrows()
+    ]
 def main(data_path="data", mode="load", model_path="saved_model", 
          tune_hyperparameters=False, favorite_movies=None, user_id=None, new_ratings=None):
     """
@@ -141,7 +161,9 @@ def main(data_path="data", mode="load", model_path="saved_model",
         recommender.train(epochs=100, patience=10)
         
         # evaluate the model
-        rmse, mae = recommender.evaluate()
+        rmse, mae, precision_5, recall_5 = recommender.evaluate()
+        metrics_results = recommender.evaluate_ranking_metrics(k_values=[1, 3, 5, 10])
+
         
         # plot training history
         recommender.plot_training_history()
@@ -167,6 +189,7 @@ def main(data_path="data", mode="load", model_path="saved_model",
             "mae": mae,
             "training_time": time.time() - start_time
         }
+        
         
         save_experiment_results(model_info, metrics)
     
@@ -287,7 +310,8 @@ def main(data_path="data", mode="load", model_path="saved_model",
     recommendations = recommender.recommend_for_user(
         user_id=new_user_id,
         favorite_movie_ids=favorite_movie_ids,
-        top_n=24
+        top_n=24,
+        diversity_factor=0.2  # Reduced diversity for more relevant recommendations
     )
     
     # get and show explanations
@@ -297,7 +321,7 @@ def main(data_path="data", mode="load", model_path="saved_model",
     movie_ids = []
     for rec in recommendations:
         try:
-            # try to find the MovieLens id for this title
+            # try to find the MovieLens id for title
             movie_row = recommender.movies_df[recommender.movies_df["title"] == rec[0]]
             if not movie_row.empty:
                 movie_ids.append(movie_row["movieId"].values[0])
@@ -314,7 +338,7 @@ def main(data_path="data", mode="load", model_path="saved_model",
         "explanations": explanations
     }
     
-    # write  results to a file that can be read by node controller
+    # write results to file that can be read by controller
     with open('recommendation_results.json', 'w') as f:
         json.dump(results, f)
     
@@ -349,12 +373,11 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     
-    # parse favorite movies if provided
+    # parse favorite movies 
     favorite_movies = None
     if args.favorite_movies:
         favorite_movies = [id.strip() for id in args.favorite_movies.split(',') if id.strip()]
         
-    # run main function
     main(
         data_path=args.data_path,
         mode=args.mode,
