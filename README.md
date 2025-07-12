@@ -25,7 +25,7 @@ Before developing the recommendation model, an in-depth exploratory data analysi
 
 
 
-The results highlight the strengths of the hybrid deep neural model, which achieved the lowest **RMSE** and **MAE** values among all evaluated approaches. This indicates a stronger ability to accurately predict user ratings.
+The results highlight the strengths of the hybrid deep learning neural model, which achieved the lowest **RMSE** and **MAE** values among all evaluated approaches. This indicates a stronger ability to accurately predict user ratings.
 
 These results show a ~20% accuracy improvement over baseline models! Meaning my model is very good at predicting what users will like on average.
 
