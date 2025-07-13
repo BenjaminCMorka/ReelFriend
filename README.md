@@ -4,7 +4,7 @@ This personal project presents a neural hybrid recommendation model that combine
 
 To boost transparency, SHAP-based post hoc explanations are integrated, giving users insight into why items are recommended. Trained on the MovieLens ml-latest-small dataset, the model achieves 20% higher accuracy across key metrics compared to standard baselines!
 
-The system is integrated in a companion web app, ReelFriend, which delivers personalized, explainable recommendations in a real-world interface.
+The system is integrated in a companion React web app, ReelFriend, which delivers personalized, explainable recommendations in a real-world interface.
 
 ---
 
