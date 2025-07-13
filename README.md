@@ -1,13 +1,10 @@
 ## ReelFriend
 
-This solo project presents a Neural hybrid deep learning recommendation model that combines matrix factorization with neural networks, making use of residual connections and feature engineering to improve accuracy. It is built using Python, TensorFlow, and JavaScript.
+This personal project presents a neural hybrid recommendation model that combines matrix factorization with deep learning, enhanced by residual connections and custom feature engineering. Built with Python, TensorFlow, and JavaScript, the model addresses key challenges like data sparsity and cold starts.
 
-The approach was designed to handle common challenges like the cold start problem and data sparsity, which frequently limit real-world systems. 
+To boost transparency, SHAP-based post hoc explanations are integrated, giving users insight into why items are recommended. Trained on the MovieLens ml-latest-small dataset, the model achieves 20% higher accuracy across key metrics compared to standard baselines.
 
-To make the model’s predictions more transparent, post hoc SHAP-based explanations are integrated to offer users insight into why specific items were recommended.  
-The model is trained and evaluated using the MovieLens ml-latest-small dataset, and results show that it predicts 20% more accurately than several standard baseline models across key metrics.
-
-Alongside the model, a web application called ReelFriend was developed to demonstrate how the system can be applied in practice, with a focus on delivering both personalised and understandable recommendations.
+The system is integrated in a companion web app, ReelFriend, which delivers personalized, explainable recommendations in a real-world interface.
 
 ---
 
